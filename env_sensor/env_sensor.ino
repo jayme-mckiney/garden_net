@@ -14,7 +14,7 @@ DHTesp dht;
 #endif
 
 // Replace with your network details
-const char* ssid = "octonet";
+const char* ssid = "Octonet";
 const char* password = "";
 
 // Web Server on port 80
@@ -74,28 +74,20 @@ void loop() {
         
         if (c == '\n' && blank_line) {
             // Sensor readings may also be up to 2 seconds 'old' (its a very slow sensor)
-            TempAndHumidity th1 = dht.getTempAndHumidity();
-            dht.resetTimer()
             // read second time
-            TempAndHumidity th2 = dht.getTempAndHumidity();
-            float f2 = dht.toFahrenheit(th2.temperature);
-
-            Serial.print("Humidity: ");
-            Serial.print(th1.humidity);
-            Serial.print(" %\t Temperature reading 1: ");
-            Serial.print(th1.temperature);
-            Serial.print(" *C ");
+            TempAndHumidity th_struct = dht.getTempAndHumidity();
+            float f2 = dht.toFahrenheit(th_struct.temperature);
 
             client.println("HTTP/1.1 200 OK");
             client.println("Content-Type: application/json");
             client.println("Connection: close");
             client.println();
             client.print("{\"temperatureC\": ");
-            client.print(th2.temperature);
+            client.print(th_struct.temperature);
             client.print(", \"temperatureF\": ");
             client.print(f2);
             client.print(", \"humidity\": ");
-            client.print(th2.humidity);
+            client.print(th_struct.humidity);
             client.print("}");
 
             break;

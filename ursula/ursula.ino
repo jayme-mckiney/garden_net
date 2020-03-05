@@ -21,7 +21,7 @@ const int durationTemp = 5000; //The frequency of temperature measurement
 
 //------------------------------------------
 //WIFI
-const char* ssid = "octonet";
+const char* ssid = "Octonet";
 const char* password = "";
 
 //------------------------------------------
@@ -54,10 +54,10 @@ void SetupDS18B20(){
     Serial.println("OFF");
   }
     
-  device_mapping["2828ff7997040370"] = "probe 1";
-  device_mapping["28f4ce7997040380"] = "probe 2";
-  device_mapping["28c7057997040366"] = "probe 3";
-  device_mapping["28afb879970403a7"] = "probe 4";
+  device_mapping["2828ff7997040370"] = "probe1";
+  device_mapping["28f4ce7997040380"] = "probe2";
+  device_mapping["28c7057997040366"] = "probe3";
+  device_mapping["28afb879970403a7"] = "probe4";
 
   numberOfDevices = DS18B20.getDeviceCount();
   Serial.print( "Device count: " );
