@@ -1,12 +1,14 @@
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String, DateTime, JSON
+
 Base = declarative_base()
+
 
 class Probes(Base):
   __tablename__ = 'probes'
   id = Column(Integer, primary_key = True)
   name = Column(String(50), unique = True)
-  zone_id = Column(Interger, ForeignKey('zone.id'))
+  zone_id = Column(Integer, ForeignKey('zone.id'))
   active = Column(Boolean)
   description = Column(String(128))
   url = Column(String(128))

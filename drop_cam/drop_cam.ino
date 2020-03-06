@@ -22,6 +22,7 @@
 #include <ArduCAM.h>
 #include <SPI.h>
 #include "memorysaver.h"
+#include "conf.h"
 #if !(defined ESP8266 )
 #error Please select the ArduCAM ESP8266 UNO board in the Tools/Board
 #endif
@@ -46,8 +47,8 @@ const char *AP_ssid = "arducam_esp8266";
 const char *AP_password = "";
 
 //Station mode you should put your ssid and password
-const char* ssid = "prism"; // Put your SSID here
-const char* password = "sweethoney"; // Put your PASSWORD here
+const char* ssid = "Octonet"; // Put your SSID here
+const char* password = ""; // Put your PASSWORD here
 
 ESP8266WebServer server(80);
 ArduCAM myCAM(OV5642, CS);
