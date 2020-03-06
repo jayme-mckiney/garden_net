@@ -6,7 +6,6 @@ from db import engine
 from models import Base
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
 
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
