@@ -2,8 +2,8 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String, DateTime, JSON
 Base = declarative_base()
 
-class ProbeConfig(Base):
-  __tablename__ = 'probe_configs'
+class Probes(Base):
+  __tablename__ = 'probes'
   id = Column(Integer, primary_key = True)
   name = Column(String(50), unique = True)
   zone_id = Column(Interger, ForeignKey('zone.id'))
@@ -24,10 +24,10 @@ class Zone(Base):
 class DataEntry(Base):
     __tablename__ = 'data_entries'
     observation_datetime = Column(DateTime)
-    source = Column(String(50))
+    probe_id = Column(Integer, ForeignKey('probes.id'))
     data = Column(JSON())
     __table_args__ = (
         PrimaryKeyConstraint(
             observation_datetime,
-            source),
+            probe_id),
         {})
