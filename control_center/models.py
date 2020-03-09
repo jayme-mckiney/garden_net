@@ -1,7 +1,5 @@
-from sqlalchemy.ext.declarative import declarative_base
+from db import Base
 from sqlalchemy import Column, Integer, String, DateTime, JSON, ForeignKey, PrimaryKeyConstraint, Boolean, ARRAY
-
-Base = declarative_base()
 
 
 class Zone(Base):
@@ -19,18 +17,11 @@ class Probe(Base):
   active = Column(Boolean)
   description = Column(String(128))
   url = Column(String(128))
+  name_mapping = Column(JSON())
 
 
-class ProbeDataMapping(Base):
-  __tablename__ = 'probe_data_mapping'
-  id = Column(Integer, primary_key = True)
-  probe_id = Column(Integer, ForeignKey('probes.id'))
-  data_column_name = Column(String(20))
-  name_mapping = Column(String(20), nullable = True)
-
-
-class DataEntry(Base):
-    __tablename__ = 'data_entries'
+class DataPoint(Base):
+    __tablename__ = 'data_points'
     observation_datetime = Column(DateTime)
     probe_id = Column(Integer, ForeignKey('probes.id'))
     data = Column(JSON())
