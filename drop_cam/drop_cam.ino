@@ -218,7 +218,7 @@ void setup() {
   myCAM.set_format(JPEG);
    myCAM.InitCAM();
    myCAM.write_reg(ARDUCHIP_TIM, VSYNC_LEVEL_MASK);   //VSYNC is active HIGH
-   myCAM.OV5642_set_JPEG_size(OV5642_320x240);
+   myCAM.OV5642_set_JPEG_size(OV5642_1600x1200);
    delay(1000);
   if (wifiType == 0){
     if(!strcmp(ssid,"SSID")){

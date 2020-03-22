@@ -1,17 +1,17 @@
 from datetime import datetime
 import time
 import requests
-from .models import Probe, DataPoint
-from .db import db_session
+from models import Probe, DataPoint
+from db import db_session
 
 """
 Sentry is a service that polls sensors configured through the webapp for data
 """
 
 while True:
-  active_probes = Probe.query().filter(Probe.active == True)
+  active_probes = Probe.query.filter(Probe.active == True)
   for probe in active_probes:
-    r = requests.get(probe.url)
+    r = requests.get(f"http://{probe.url}/")
     if r.status_code == 200:
       datapoint = DataPoint(observation_datetime = datetime.now(), probe_id = probe.id, data = r.json())
       db_session.add(datapoint)
