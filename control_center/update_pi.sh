@@ -1,0 +1,1 @@
+rsync -a --exclude='node_modules' ./ pi@gardenpi:/home/pi/garden_net/control_center/

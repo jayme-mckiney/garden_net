@@ -3,10 +3,13 @@ import React, { Component } from 'react';
 import ListGroup from 'react-bootstrap/ListGroup';
 import Col from 'react-bootstrap/Col';
 
+import resolveHost from '../../helpers'
+
 class ListProbes extends Component {
 
   componentWillMount() {
-    fetch('http://0.0.0.0:5000/probes', {
+    let host = resolveHost()
+    fetch(`http://${host}/probes`, {
       method: 'GET',
       mode: 'cors',
     })
@@ -14,8 +17,8 @@ class ListProbes extends Component {
       this.probes = data
       console.log(data);
     })
-    .catch((data) => {
-      console.log(data)
+    .catch((error) => {
+      console.log(error)
     })
   }
 

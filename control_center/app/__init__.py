@@ -17,11 +17,6 @@ class CustomEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, obj)
 
 
-def custom_json_output(data, code, headers=None):
-    dumped = json.dumps(data, cls=CustomEncoder)
-    resp = make_response(dumped, code)
-    resp.headers.extend(headers or {})
-    return resp
 
 
 def create_app(db_session=None, debug=False):
@@ -30,9 +25,7 @@ def create_app(db_session=None, debug=False):
   if debug:
     CORS(app)
   api = Api(app, catch_all_404s=True)
-  api.representations.update({
-      'application/json': custom_json_output
-  })
+  app.json_encoder = CustomEncoder
 
   @app.teardown_appcontext
   def shutdown_session(exception=None):
