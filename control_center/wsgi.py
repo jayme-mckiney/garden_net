@@ -8,7 +8,9 @@ from app.db import (
 db_session.bind = engine
 Base.metadata.bind = engine 
 
-app = create_app(db_session)
+debug = True
+
+app = create_app(db_session=db_session, debug=debug)
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', debug=True)
+    app.run(host='0.0.0.0', debug=debug)

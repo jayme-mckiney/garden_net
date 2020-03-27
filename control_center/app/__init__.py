@@ -1,5 +1,6 @@
 from flask import Flask
 from flask_restful import Api
+from flask_cors import CORS
 import json
 from .probe_config import ProbeConfig, ProbeList
 from .data_points import DataPointRetrieval
@@ -23,9 +24,11 @@ def custom_json_output(data, code, headers=None):
     return resp
 
 
-def create_app(db_session):
+def create_app(db_session=None, debug=False):
   """Initialize the core application."""
   app = Flask(__name__)
+  if debug:
+    CORS(app)
   api = Api(app, catch_all_404s=True)
   api.representations.update({
       'application/json': custom_json_output

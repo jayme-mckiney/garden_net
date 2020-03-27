@@ -6,12 +6,16 @@ import Col from 'react-bootstrap/Col';
 class ListProbes extends Component {
 
   componentWillMount() {
-    fetch('0.0.0.0:5000/probes', {
+    fetch('http://0.0.0.0:5000/probes', {
       method: 'GET',
       mode: 'cors',
     })
     .then((data) => {
       this.probes = data
+      console.log(data);
+    })
+    .catch((data) => {
+      console.log(data)
     })
   }
 
