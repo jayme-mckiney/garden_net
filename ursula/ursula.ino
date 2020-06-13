@@ -21,7 +21,7 @@ const int durationTemp = 5000; //The frequency of temperature measurement
 
 //------------------------------------------
 //WIFI
-const char* ssid = "Octonet";
+const char* ssid = "ssid";
 const char* password = "";
 
 //------------------------------------------
@@ -154,6 +154,7 @@ void setup() {
   Serial.begin(115200);
 
   //Setup WIFI
+  WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
   Serial.println("");
 

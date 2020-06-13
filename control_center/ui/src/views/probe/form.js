@@ -12,10 +12,38 @@ class FormOption extends Component {
   }
 }
 
-class CreateProbe extends Component {
+class ProbeForm extends Component {
+  constructor(props) {
+    super(props);
+    let new_probe = {
+      probe_id: null,
+      name: null,
+      zone_id: null,
+      description: null,
+      url: null,
+      active: false,
+      name_mapping: {}
+    };
+    Object.assign(new_probe, props.probe);
+    this.state = new_probe
+    this.handleInput  = this.handleInput.bind(this)
+  }
+
+  handleInput(event) {
+    const target = event.target;
+    const value = target.name === "active" ? target.checked : target.value;
+    const name = target.name;
+    this.setState({
+      [name]: value
+    });
+  }
 
   render() {
-
+    let submitText = this.props.edit ? "Save" : "Create"
+    let cancelButton = null;
+    if (this.props.edit === true) {
+      cancelButton = <Button onClick={this.props.cancel} type="button">Cancel</Button>
+    }
     // get the zone options for real
     let zone_options = new Map([[1, "Zone 1"], [2, "Zone 2"], [3, "Zone 3"]])
     let form_options = [<FormOption value={null} label="None" />]
@@ -27,16 +55,16 @@ class CreateProbe extends Component {
         <Form.Row>
           <Form.Group as={Col} controlId="probeNameId">
             <Form.Label>Probe Name</Form.Label>
-            <Form.Control placeholder="Environmental Sensor 1" />
+            <Form.Control value={this.state.name} onChange={this.handleInput} placeholder="Environmental Sensor 1" />
           </Form.Group>
           <Form.Group as={Col} controlId="probeUrlId">
             <Form.Label>Probe URL</Form.Label>
-            <Form.Control placeholder="ESP_3216581" />
+            <Form.Control value={this.state.url} onChange={this.handleInput} placeholder="ESP_3216581" />
           </Form.Group>
         </Form.Row>
         <Form.Group controlId="probeDescriptionId">
           <Form.Label>Description</Form.Label>
-          <Form.Control placeholder="This environmental sensor is installed near the lights" />
+          <Form.Control value={this.state.description} onChange={this.handleInput} placeholder="This environmental sensor is installed near the lights" />
         </Form.Group>
         <Form.Row>
           <Form.Group as={Col} controlId="zoneId">
@@ -49,15 +77,19 @@ class CreateProbe extends Component {
             <Form.Check 
               type="switch"
               id="active"
+              name='active'
+              value={this.state.active}
+              onChange={this.handleInput}
               label="Activate this probe on creation"
             />
           </Form.Group>
         </Form.Row>
-        <Button type="submit">Submit form</Button>
+        <Button type="submit">{submitText}</Button>
+        {cancelButton}
       </Form>
 
     )
   }
 }
 
-export default CreateProbe;
+export default ProbeForm;

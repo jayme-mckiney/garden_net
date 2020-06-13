@@ -17,6 +17,7 @@ import {
 } from "react-router-dom";
 
 import Welcome from './views/welcome';
+import MonitorHome from './views/monitor/home'
 import CreateProbe from './views/probe/create'
 import ListProbes from './views/probe/list'
 
@@ -37,6 +38,7 @@ function App() {
               </ListGroup.Item>
                 <ListGroup>
                   <ListGroup className="sub-menu collapse" id="monitor">
+                    <ListGroup.Item> <NavLink to="/data/home">Home</NavLink></ListGroup.Item>
                     <ListGroup.Item> <NavLink to="/data/search">Search</NavLink></ListGroup.Item>
                   </ListGroup>
                 </ListGroup>
@@ -80,6 +82,7 @@ function App() {
           <Col xl={{ span: 7, offset: 3 }} lg={{ span: 8, offset: 3 }} xs={{ span: 8, offset: 2 }}>
             <Container>
               <Route path="/" component={Welcome}/>
+              <Route path="/data/home" component={MonitorHome}/>
               <Route path="/probes/create" component={CreateProbe}/>
               <Route path="/probes" component={ListProbes}/>
             </Container>

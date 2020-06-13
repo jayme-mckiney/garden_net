@@ -1,21 +1,9 @@
-from flask import Flask
+from flask import Flask, make_response
 from flask_restful import Api
 from flask_cors import CORS
 import json
 from .probe_config import ProbeConfig, ProbeList
 from .data_points import DataPointRetrieval
-
-
-class CustomEncoder(json.JSONEncoder):
-    def default(self, obj):
-        if isinstance(obj, datetime.datetime):
-            #return int(obj.strftime('%s'))
-            return str(obj)
-        elif isinstance(obj, datetime.date):
-            #return int(obj.strftime('%s'))
-            return str(obj)
-        return json.JSONEncoder.default(self, obj)
-
 
 
 
@@ -25,7 +13,13 @@ def create_app(db_session=None, debug=False):
   if debug:
     CORS(app)
   api = Api(app, catch_all_404s=True)
-  app.json_encoder = CustomEncoder
+
+
+  @api.representation('application/json')
+  def output_json(data, code, headers=None):
+      resp = make_response(json.dumps(data, default=str), code)
+      resp.headers.extend(headers or {})
+      return resp
 
   @app.teardown_appcontext
   def shutdown_session(exception=None):

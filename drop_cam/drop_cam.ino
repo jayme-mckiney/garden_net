@@ -47,7 +47,7 @@ const char *AP_ssid = "arducam_esp8266";
 const char *AP_password = "";
 
 //Station mode you should put your ssid and password
-const char* ssid = "Octonet"; // Put your SSID here
+const char* ssid = "ssid"; // Put your SSID here
 const char* password = ""; // Put your PASSWORD here
 
 ESP8266WebServer server(80);
