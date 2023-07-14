@@ -25,17 +25,20 @@ class ProbeForm extends Component {
       name_mapping: {}
     };
     Object.assign(new_probe, props.probe);
+    console.log(props.probe)
     this.state = new_probe
     this.handleInput  = this.handleInput.bind(this)
   }
 
   handleInput(event) {
     const target = event.target;
+    console.log(target)
     const value = target.name === "active" ? target.checked : target.value;
     const name = target.name;
-    this.setState({
-      [name]: value
-    });
+    let new_state = {}
+    new_state[name] = value;
+    console.log(new_state)
+    this.setState(new_state);
   }
 
   render() {
@@ -55,16 +58,16 @@ class ProbeForm extends Component {
         <Form.Row>
           <Form.Group as={Col} controlId="probeNameId">
             <Form.Label>Probe Name</Form.Label>
-            <Form.Control value={this.state.name} onChange={this.handleInput} placeholder="Environmental Sensor 1" />
+            <Form.Control name='name' value={this.state.name} onChange={this.handleInput} placeholder="Environmental Sensor 1" />
           </Form.Group>
           <Form.Group as={Col} controlId="probeUrlId">
             <Form.Label>Probe URL</Form.Label>
-            <Form.Control value={this.state.url} onChange={this.handleInput} placeholder="ESP_3216581" />
+            <Form.Control name='url' value={this.state.url} onChange={this.handleInput} placeholder="ESP_3216581" />
           </Form.Group>
         </Form.Row>
         <Form.Group controlId="probeDescriptionId">
           <Form.Label>Description</Form.Label>
-          <Form.Control value={this.state.description} onChange={this.handleInput} placeholder="This environmental sensor is installed near the lights" />
+          <Form.Control name='description' value={this.state.description} onChange={this.handleInput} placeholder="This environmental sensor is installed near the lights" />
         </Form.Group>
         <Form.Row>
           <Form.Group as={Col} controlId="zoneId">
@@ -78,12 +81,16 @@ class ProbeForm extends Component {
               type="switch"
               id="active"
               name='active'
-              value={this.state.active}
+              checked={this.state.active}
               onChange={this.handleInput}
-              label="Activate this probe on creation"
+              label="Activate this probe"
             />
           </Form.Group>
         </Form.Row>
+        <Form.Group controlId="probeNameMapping">
+          <Form.Label>Name Mapping</Form.Label>
+          <Form.Control value={this.state.name_mapping} onChange={this.handleInput} />
+        </Form.Group>
         <Button type="submit">{submitText}</Button>
         {cancelButton}
       </Form>

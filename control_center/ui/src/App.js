@@ -20,6 +20,7 @@ import Welcome from './views/welcome';
 import MonitorHome from './views/monitor/home'
 import CreateProbe from './views/probe/create'
 import ListProbes from './views/probe/list'
+import {SimpleGraphWrapper} from './views/monitor/graph'
 
 function App() {
   return (
@@ -83,6 +84,7 @@ function App() {
             <Container>
               <Route path="/" component={Welcome}/>
               <Route path="/data/home" component={MonitorHome}/>
+              <Route path="/data/probe/:id" component={SimpleGraphWrapper}/>
               <Route path="/probes/create" component={CreateProbe}/>
               <Route path="/probes" component={ListProbes}/>
             </Container>

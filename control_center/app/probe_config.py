@@ -7,7 +7,7 @@ from flask_restful import (
     abort,
     marshal
   )
-from models import Probe
+from app.models import Probe
 
 class ProbeConfig(Resource):
   def get(self):

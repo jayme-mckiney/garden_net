@@ -77,16 +77,17 @@ void loop() {
             // Sensor readings may also be up to 2 seconds 'old' (its a very slow sensor)
             // read second time
             TempAndHumidity th_struct = dht.getTempAndHumidity();
-            float f2 = dht.toFahrenheit(th_struct.temperature);
+
+            // check data and send error when appropriate
+
+            float temp_f = dht.toFahrenheit(th_struct.temperature);
 
             client.println("HTTP/1.1 200 OK");
             client.println("Content-Type: application/json");
             client.println("Connection: close");
             client.println();
-            client.print("{\"temperatureC\": ");
-            client.print(th_struct.temperature);
-            client.print(", \"temperatureF\": ");
-            client.print(f2);
+            client.print(", {\"temperatureF\": ");
+            client.print(temp_f);
             client.print(", \"humidity\": ");
             client.print(th_struct.humidity);
             client.print("}");

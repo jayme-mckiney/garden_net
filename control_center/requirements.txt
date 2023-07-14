@@ -1,3 +1,5 @@
 pymysql
 flask
+flask-restful
+flask_cors
 SQLAlchemy

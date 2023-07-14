@@ -7,7 +7,8 @@ from flask_restful import (
     marshal
   )
 import json
-from models import DataPoint, Probe
+import re
+from app.models import DataPoint, Probe
 
 class Mapping_Stub():
   def __init__(self):
@@ -41,6 +42,7 @@ class DataPointRetrieval(Resource):
     start_time = request_json.get('start_time')
     end_time = request_json.get('end_time')
     zone_id = request_json.get('zone_id')
+    limit = request_json.get('limit', 5000)
     probes = list(map(lambda x: x.as_dict(), Probe.query.filter(Probe.id.in_(probe_ids)).all()))
     if zone_id:
       query_result = Probe.query.filter(Probe.zone_id == zone_id).all()
@@ -48,19 +50,20 @@ class DataPointRetrieval(Resource):
       probes.extend(probes_from_zone)
     filters = []
     if start_time:
-      filter.append(DataPoint.observation_datetime <= start_time)
+      filters.append(DataPoint.observation_datetime >= start_time)
     if end_time:
-      filter.append(DataPoint.observation_datetime >= end_time)
+      filters.append(DataPoint.observation_datetime <= end_time)
     data = DataSet()
     for probe in probes:
       if probe.get('mappings'):
         mappings = probe.get('mappings')
       else:
         mappings = Mapping_Stub()
-      query_result = DataPoint.query.filter(DataPoint.probe_id == probe.get('id'), *filters).order_by(DataPoint.observation_datetime).all()
+      query_result = DataPoint.query.filter(DataPoint.probe_id == probe.get('id'), *filters).order_by(DataPoint.observation_datetime.desc()).limit(limit).all()
       for entry in query_result:
-        print(entry.data)
         for data_key, value in entry.data.items():
           long_key = f'{probe.get("name")}_{mappings.get(data_key).get("name")}'
-          data.push_coords(key=long_key, x=entry.observation_datetime, y=value)
+          timestamp = entry.observation_datetime.timestamp()
+          print(timestamp)
+          data.push_coords(key=long_key, x=timestamp * 1000, y=value)
     return(data.get_data_points(), 200)

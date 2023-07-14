@@ -1,8 +1,8 @@
 from datetime import datetime
 import time
 import requests
-from models import Probe, DataPoint
-from db import db_session
+from app.models import Probe, DataPoint
+from app.db import db_session
 
 """
 Sentry is a service that polls sensors configured through the webapp for data
@@ -19,4 +19,4 @@ while True:
       # log something
       print(f"recieved a non 200 response for {probe.name} at url: {probe.url}")
   db_session.commit()
-  time.sleep(10)
+  time.sleep(60)
