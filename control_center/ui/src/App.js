@@ -12,13 +12,14 @@ import ListGroup from 'react-bootstrap/ListGroup';
 
 import {
   Route,
+  Routes,
   NavLink,
   HashRouter
 } from "react-router-dom";
 
 import Welcome from './views/welcome';
 import MonitorHome from './views/monitor/home'
-import CreateProbe from './views/probe/create'
+import CreateProbe from './views/probe/form'
 import ListProbes from './views/probe/list'
 import {SimpleGraphWrapper} from './views/monitor/graph'
 
@@ -82,11 +83,13 @@ function App() {
 
           <Col xl={{ span: 7, offset: 3 }} lg={{ span: 8, offset: 3 }} xs={{ span: 8, offset: 2 }}>
             <Container>
-              <Route path="/" component={Welcome}/>
-              <Route path="/data/home" component={MonitorHome}/>
-              <Route path="/data/probe/:id" component={SimpleGraphWrapper}/>
-              <Route path="/probes/create" component={CreateProbe}/>
-              <Route path="/probes" component={ListProbes}/>
+              <Routes>
+                {/*<Route path="/" component={Welcome}/>*/}
+                <Route path="/data/home" component={MonitorHome}/>
+                <Route path="/data/probe/:id" component={SimpleGraphWrapper}/>
+                <Route path="/probes/create" component={CreateProbe}/>
+                <Route path="/probes" component={ListProbes}/>
+              </Routes>
             </Container>
           </Col>
         </Row>
