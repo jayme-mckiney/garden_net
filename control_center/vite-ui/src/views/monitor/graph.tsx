@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
-import CanvasJSReact from '../../assets/canvasjs.react';
-import resolveHost from '../../helpers'
-
-var CanvasJSChart = CanvasJSReact.CanvasJSChart;
+import {CanvasJSChart} from 'canvasjs-react-charts'
+import {resolveHost} from '../../helpers'
+import { useParams } from "react-router";
 
 export class Graph extends Component {
   state = {
@@ -70,11 +69,9 @@ export class Graph extends Component {
   }
 }
 
-export class SimpleGraphWrapper extends Component {
-  render() {
-    const { id } = this.props.match.params
-    return <Graph queryInfo={{probe_ids: [id]}} />
-  }
+export const SimpleGraphWrapper = () => {
+  let { id } = useParams();
+  return (<Graph queryInfo={{probe_ids: [id]}} />)
 }
 
                    

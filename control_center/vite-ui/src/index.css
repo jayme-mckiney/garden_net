@@ -30,7 +30,6 @@ body {
   border-right: 1px solid #ccc;
   bottom: 0;
   top: 0;
-  display: block;
   left: 0;
   overflow-x: hidden;
   overflow-y: auto;
@@ -39,6 +38,11 @@ body {
   top: 56px;
   width: 250px;
   z-index: 1000;
+}
+@media (min-width: 992px) {
+  #sidebar {
+    display: block;
+  }
 }
 #sidebar > .nav {
   padding-bottom: 24px;

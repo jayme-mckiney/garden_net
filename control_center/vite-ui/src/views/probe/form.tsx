@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 
 import Form from 'react-bootstrap/Form';
 import Col from 'react-bootstrap/Col';
+import Row from 'react-bootstrap/Row';
 import Button from 'react-bootstrap/Button';
 
 
@@ -14,7 +15,7 @@ class FormOption extends Component {
 
 class ProbeForm extends Component {
   constructor(props) {
-    super(props);
+    super(props)
     let new_probe = {
       probe_id: null,
       name: null,
@@ -26,6 +27,7 @@ class ProbeForm extends Component {
     };
     Object.assign(new_probe, props.probe);
     console.log(props.probe)
+    new_probe.name_mapping = JSON.stringify(new_probe.name_mapping)
     this.state = new_probe
     this.handleInput  = this.handleInput.bind(this)
   }
@@ -49,13 +51,13 @@ class ProbeForm extends Component {
     }
     // get the zone options for real
     let zone_options = new Map([[1, "Zone 1"], [2, "Zone 2"], [3, "Zone 3"]])
-    let form_options = [<FormOption value={null} label="None" />]
+    let form_options = [<FormOption key={0} value={null} label="None" />]
     for (const[k, v] of zone_options) {
-      form_options.push(<FormOption value={k} label={v} />)
+      form_options.push(<FormOption key={k} value={k} label={v} />)
     }
     return (
       <Form>
-        <Form.Row>
+        <Row>
           <Form.Group as={Col} controlId="probeNameId">
             <Form.Label>Probe Name</Form.Label>
             <Form.Control name='name' value={this.state.name} onChange={this.handleInput} placeholder="Environmental Sensor 1" />
@@ -64,12 +66,12 @@ class ProbeForm extends Component {
             <Form.Label>Probe URL</Form.Label>
             <Form.Control name='url' value={this.state.url} onChange={this.handleInput} placeholder="ESP_3216581" />
           </Form.Group>
-        </Form.Row>
+        </Row>
         <Form.Group controlId="probeDescriptionId">
           <Form.Label>Description</Form.Label>
           <Form.Control name='description' value={this.state.description} onChange={this.handleInput} placeholder="This environmental sensor is installed near the lights" />
         </Form.Group>
-        <Form.Row>
+        <Row>
           <Form.Group as={Col} controlId="zoneId">
             <Form.Label>Probe Zone Location</Form.Label>
             <Form.Control as="select">
@@ -86,7 +88,7 @@ class ProbeForm extends Component {
               label="Activate this probe"
             />
           </Form.Group>
-        </Form.Row>
+        </Row>
         <Form.Group controlId="probeNameMapping">
           <Form.Label>Name Mapping</Form.Label>
           <Form.Control value={this.state.name_mapping} onChange={this.handleInput} />

@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import Table from 'react-bootstrap/Table';
 import Col from 'react-bootstrap/Col';
 
-import resolveHost from '../../helpers'
+import {resolveHost} from '../../helpers'
 import ProbeForm  from './form'
 
 
@@ -68,12 +68,12 @@ class ListProbes extends Component {
     let content =  "<h1>Loading</h1>"
     if (this.state.probes != null) {
       content = []
-      console.log(this.state.probes)
+
       for(let index in this.state.probes) {
         if (this.state.edit !== null && this.state.edit === index) {
-          content.push(<EditFormWrapper cancel={this.cancelEdit.bind(this)} probe={this.state.probes[index]} />)
+          content.push(<EditFormWrapper key={index} cancel={this.cancelEdit.bind(this)} probe={this.state.probes[index]} />)
         } else {
-          content.push(<ProbeEntry onClick={this.startEdit.bind(this, index)} probeData={this.state.probes[index]} />)
+          content.push(<ProbeEntry key={index} onClick={this.startEdit.bind(this, index)} probeData={this.state.probes[index]} />)
         }
       }
     }

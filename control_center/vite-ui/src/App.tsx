@@ -13,30 +13,32 @@ import ListGroup from 'react-bootstrap/ListGroup';
 import {
   Route,
   Routes,
+  Outlet,
   NavLink,
   HashRouter
 } from "react-router-dom";
 
 import Welcome from './views/welcome';
 import MonitorHome from './views/monitor/home'
-import CreateProbe from './views/probe/form'
+import ProbeForm from './views/probe/form'
+import MonitorSearchForm from './views/monitor/search'
 import ListProbes from './views/probe/list'
 import {SimpleGraphWrapper} from './views/monitor/graph'
 
 function App() {
   return (
     <div className="App">
-      <Navbar bg="dark" variant="dark">
-        <button className="d-lg-none toggle-sidebar"><span className="navbar-toggler-icon"></span></button>
-        <Navbar.Brand href="/">Garden Net</Navbar.Brand>
-      </Navbar>
       <HashRouter>
+        <Navbar bg="dark" variant="dark">
+          <button data-bs-target="#sidebar" data-bs-toggle="collapse" className="d-lg-none toggle-sidebar"><span className="navbar-toggler-icon"></span></button>
+          <Navbar.Brand href="/">Garden Net</Navbar.Brand>
+        </Navbar>
         <Row>
-          <Nav to="/" className="flex-sm-column" id="sidebar">
+          <Nav to="/" className="flex-sm-column collapse" tabindex="-1" id="sidebar">
             <ListGroup className="nav nav-sidebar flex-sm-column">
 
               <ListGroup.Item>
-                <a href="#monitor" data-toggle="collapse" aria-expanded="false" className="dropdown-toggle"><span>Monitor</span></a>
+                <a href="#monitor" data-bs-toggle="collapse" aria-expanded="false" className="dropdown-toggle"><span>Monitor</span></a>
               </ListGroup.Item>
                 <ListGroup>
                   <ListGroup className="sub-menu collapse" id="monitor">
@@ -47,24 +49,24 @@ function App() {
               <ListGroup.Item role="separator" className="divider"></ListGroup.Item>
 
               <ListGroup.Item>
-                <a href="#config" data-toggle="collapse" aria-expanded="false" className="dropdown-toggle"><span>Config</span></a>
+                <a href="#config" data-bs-toggle="collapse" aria-expanded="false" className="dropdown-toggle"><span>Config</span></a>
               </ListGroup.Item>
                 <ListGroup>
                   <ListGroup className="sub-menu collapse" id="config">
 
                     <ListGroup.Item>
-                      <a href="#probes" data-toggle="collapse" aria-expanded="false" className="dropdown-toggle"><span>Probes</span></a>
+                      <a href="#probes" data-bs-toggle="collapse" aria-expanded="false" className="dropdown-toggle"><span>Probes</span></a>
                     </ListGroup.Item>
                     <ListGroup>
                       <ListGroup className="sub-menu collapse" id="probes">
                         <ListGroup.Item> <NavLink to="/probes/create">Create</NavLink></ListGroup.Item>
-                        <ListGroup.Item> <NavLink to="/probes/list">List</NavLink></ListGroup.Item>
+                        <ListGroup.Item> <NavLink to="/probes/">List</NavLink></ListGroup.Item>
                         <ListGroup.Item> <NavLink to="/probes/search">Search</NavLink></ListGroup.Item>
                       </ListGroup>
                     </ListGroup>
 
                     <ListGroup.Item>
-                      <a href="#zones" data-toggle="collapse" aria-expanded="false" className="dropdown-toggle"><span>Zones</span></a>
+                      <a href="#zones" data-bs-toggle="collapse" aria-expanded="false" className="dropdown-toggle"><span>Zones</span></a>
                     </ListGroup.Item>
                     <ListGroup>
                       <ListGroup className="sub-menu collapse" id="zones">
@@ -84,11 +86,12 @@ function App() {
           <Col xl={{ span: 7, offset: 3 }} lg={{ span: 8, offset: 3 }} xs={{ span: 8, offset: 2 }}>
             <Container>
               <Routes>
-                {/*<Route path="/" component={Welcome}/>*/}
-                <Route path="/data/home" component={MonitorHome}/>
-                <Route path="/data/probe/:id" component={SimpleGraphWrapper}/>
-                <Route path="/probes/create" component={CreateProbe}/>
-                <Route path="/probes" component={ListProbes}/>
+                <Route path="/" element={<Welcome />}/>
+                <Route path="/data/home" element={<MonitorHome />}/>
+                <Route path="/data/probe/:id" element={<SimpleGraphWrapper />}/>
+                <Route path="/probes" element={<ListProbes />}/>
+                <Route path="/probes/create" element={<ProbeForm />}/>
+                
               </Routes>
             </Container>
           </Col>

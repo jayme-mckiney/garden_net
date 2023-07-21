@@ -47,4 +47,4 @@ class MonitorSearchForm extends Component {
   }
 }
 
-export default CreateProbe;
+export default MonitorSearchForm;

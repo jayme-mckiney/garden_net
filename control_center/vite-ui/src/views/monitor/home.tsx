@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Container, Row, Col, Spinner } from 'react-bootstrap';
 
-import resolveHost from '../../helpers'
+import {resolveHost} from '../../helpers'
 
 
 
