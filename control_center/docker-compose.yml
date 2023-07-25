@@ -13,6 +13,7 @@ services:
             MYSQL_ROOT_PASSWORD: root
     app:
         container_name: myapp
+        build: ./
         volumes:
         - ./:/usr/control_center
         links:

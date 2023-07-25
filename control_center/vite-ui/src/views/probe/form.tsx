@@ -4,7 +4,7 @@ import Form from 'react-bootstrap/Form';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 import Button from 'react-bootstrap/Button';
-
+import {resolveHost} from '../../helpers'
 
 class FormOption extends Component {
 
@@ -17,30 +17,118 @@ class ProbeForm extends Component {
   constructor(props) {
     super(props)
     let new_probe = {
-      probe_id: null,
+      id: null,
       name: null,
       zone_id: null,
       description: null,
       url: null,
       active: false,
-      name_mapping: {}
     };
     Object.assign(new_probe, props.probe);
-    console.log(props.probe)
-    new_probe.name_mapping = JSON.stringify(new_probe.name_mapping)
-    this.state = new_probe
+    let probe_data = []
+    this.state = {'probe': new_probe, 'probe_data': probe_data, 'zones': [] }
     this.handleInput  = this.handleInput.bind(this)
+    this.handleProbeDataInput  = this.handleProbeDataInput.bind(this)
+    this.addProbeData  = this.addProbeData.bind(this)
+    this.save = this.save.bind(this)
+  }
+
+  componentWillMount() {
+    let host = resolveHost()
+    fetch(`http://${host}/zones`, {
+      method: 'GET',
+      mode: 'cors',
+    })
+    .then((response) => response.json())
+    .then((data) => {
+      console.log(data.zones)
+      this.setState({'zones': data.zones})
+    })
+    .catch((error) => {
+      console.log(error)
+    })
+    if (this.props.probe) {
+      fetch(`http://${host}/probes/${this.props.probe.id}`, {
+        method: 'GET',
+        mode: 'cors',
+      })
+      .then((response) => response.json())
+      .then((data) => {
+        this.setState({'probe_data': data.probe_data})
+      })
+      .catch((error) => {
+        console.log(error)
+      })
+    }
+  }
+
+  addProbeData() {
+    let new_data_part = {
+      id: null,
+      name: null,
+      name_in_probe: null,
+      description: null,
+      probe_id: this.state.probe.id,
+    }
+    let data_parts = this.state.probe_data
+    data_parts.push(new_data_part)
+    this.setState({probe_data: data_parts})
   }
 
   handleInput(event) {
     const target = event.target;
-    console.log(target)
     const value = target.name === "active" ? target.checked : target.value;
     const name = target.name;
     let new_state = {}
+    Object.assign(new_state, this.state.probe)
     new_state[name] = value;
-    console.log(new_state)
-    this.setState(new_state);
+    this.setState({'probe': new_state});
+  }
+
+  handleProbeDataInput(event) {
+    const target = event.target;
+    const name = target.name;
+    const i = parseInt(target.getAttribute('data-index'))
+    let new_array = []
+    for(let j = 0; j < this.state.probe_data.length; j++) {
+      let new_state = {}
+      Object.assign(new_state, this.state.probe_data[j])
+      new_array.push(new_state)
+    }
+    new_array[i][name] = target.value
+    this.setState({'probe_data': new_array});
+  }
+
+  save() {
+    let host = resolveHost()
+    let route = this.props.edit ? `probes/${this.state.probe.id}` : 'probes'
+    let method = this.props.edit ? 'PUT' : 'POST'
+    let probe = {}
+    Object.assign(probe, this.state.probe)
+    let new_array = []
+    for(let j=0; j < this.state.probe_data.length; j++) {
+      let new_state = {}
+      Object.assign(new_state, this.state.probe_data[j])
+      new_array.push(new_state)
+    }
+    let payload = {
+      probe: probe,
+      probe_data: new_array
+    }
+    fetch(`http://${host}/${route}`, {
+      method: method,
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(payload),
+      mode: 'cors'
+    })
+    .then((response) => response.json())
+    .then((data) => {
+      this.setState()
+      console.log(data)
+    })
+    .catch((error) => {
+      console.log(error)
+    })
   }
 
   render() {
@@ -50,26 +138,46 @@ class ProbeForm extends Component {
       cancelButton = <Button onClick={this.props.cancel} type="button">Cancel</Button>
     }
     // get the zone options for real
-    let zone_options = new Map([[1, "Zone 1"], [2, "Zone 2"], [3, "Zone 3"]])
-    let form_options = [<FormOption key={0} value={null} label="None" />]
-    for (const[k, v] of zone_options) {
-      form_options.push(<FormOption key={k} value={k} label={v} />)
+    let form_options = []
+    if (this.state.zones.length == -1) {
+      form_options.push(<FormOption key={0} value={null} label="Loading" />)
+    }
+    for (let zone of this.state.zones) {
+      form_options.push(<FormOption key={zone.id} value={zone.id} label={zone.name} />)
+    }
+    let probe_data_form = []
+    let i =0
+    for (let probe_data of this.state.probe_data) {
+      probe_data_form.push(
+        <div className="form-group row" key={i}>
+          <div className="col">
+            {i==0 ? <Form.Label>Name</Form.Label>: ""}
+            <Form.Control data-index={i} name='name' value={this.state.probe_data[i].name} onChange={this.handleProbeDataInput} placeholder="temp high" /></div>
+          <div className="col">
+            {i==0 ? <Form.Label>Name in Probe</Form.Label>: ""}
+            <Form.Control data-index={i} name='name_in_probe' value={this.state.probe_data[i].name_in_probe} onChange={this.handleProbeDataInput} placeholder="tempertureF" /></div>
+          <div className="col">
+            {i==0 ? <Form.Label>Description</Form.Label>: ""}
+            <Form.Control data-index={i} name='description' value={this.state.probe_data[i].description} onChange={this.handleProbeDataInput} placeholder="temperture from high in the tent" /></div>
+        </div>
+      )
+      i ++;
     }
     return (
       <Form>
         <Row>
           <Form.Group as={Col} controlId="probeNameId">
             <Form.Label>Probe Name</Form.Label>
-            <Form.Control name='name' value={this.state.name} onChange={this.handleInput} placeholder="Environmental Sensor 1" />
+            <Form.Control name='name' value={this.state.probe.name} onChange={this.handleInput} placeholder="Environmental Sensor 1" />
           </Form.Group>
           <Form.Group as={Col} controlId="probeUrlId">
             <Form.Label>Probe URL</Form.Label>
-            <Form.Control name='url' value={this.state.url} onChange={this.handleInput} placeholder="ESP_3216581" />
+            <Form.Control name='url' value={this.state.probe.url} onChange={this.handleInput} placeholder="ESP_3216581" />
           </Form.Group>
         </Row>
         <Form.Group controlId="probeDescriptionId">
           <Form.Label>Description</Form.Label>
-          <Form.Control name='description' value={this.state.description} onChange={this.handleInput} placeholder="This environmental sensor is installed near the lights" />
+          <Form.Control name='description' value={this.state.probe.description} onChange={this.handleInput} placeholder="This environmental sensor is installed near the lights" />
         </Form.Group>
         <Row>
           <Form.Group as={Col} controlId="zoneId">
@@ -83,17 +191,18 @@ class ProbeForm extends Component {
               type="switch"
               id="active"
               name='active'
-              checked={this.state.active}
+              checked={this.state.probe.active}
               onChange={this.handleInput}
               label="Activate this probe"
             />
           </Form.Group>
         </Row>
         <Form.Group controlId="probeNameMapping">
-          <Form.Label>Name Mapping</Form.Label>
-          <Form.Control value={this.state.name_mapping} onChange={this.handleInput} />
+          <Form.Label>Data Name Mapping</Form.Label>
+          {probe_data_form}
+          <Button onClick={this.addProbeData} type='button'>Add Data Mapping</Button>
         </Form.Group>
-        <Button type="submit">{submitText}</Button>
+        <Button onClick={this.save} type="button">{submitText}</Button>
         {cancelButton}
       </Form>
 

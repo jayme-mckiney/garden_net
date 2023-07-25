@@ -34,7 +34,7 @@ function App() {
           <Navbar.Brand href="/">Garden Net</Navbar.Brand>
         </Navbar>
         <Row>
-          <Nav to="/" className="flex-sm-column collapse" tabindex="-1" id="sidebar">
+          <Nav to="/" className="flex-sm-column collapse" id="sidebar">
             <ListGroup className="nav nav-sidebar flex-sm-column">
 
               <ListGroup.Item>
@@ -91,7 +91,7 @@ function App() {
                 <Route path="/data/probe/:id" element={<SimpleGraphWrapper />}/>
                 <Route path="/probes" element={<ListProbes />}/>
                 <Route path="/probes/create" element={<ProbeForm />}/>
-                
+
               </Routes>
             </Container>
           </Col>

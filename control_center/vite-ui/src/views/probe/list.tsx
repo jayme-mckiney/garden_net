@@ -25,7 +25,7 @@ class EditFormWrapper extends Component {
   render() {
     return (
       <tr>
-      <td colspan="4">
+      <td colSpan="4">
         <ProbeForm edit={true} cancel={this.props.cancel} probe={this.props.probe}/> </td>
       </tr>
     )
