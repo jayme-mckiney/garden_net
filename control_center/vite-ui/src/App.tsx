@@ -21,6 +21,7 @@ import {
 import Welcome from './views/welcome';
 import MonitorHome from './views/monitor/home'
 import ProbeForm from './views/probe/form'
+import GraphForm from './views/graph/form'
 import MonitorSearchForm from './views/monitor/search'
 import ListProbes from './views/probe/list'
 import {SimpleGraphWrapper} from './views/monitor/graph'
@@ -55,13 +56,22 @@ function App() {
                   <ListGroup className="sub-menu collapse" id="config">
 
                     <ListGroup.Item>
+                      <a href="#graphs" data-bs-toggle="collapse" aria-expanded="false" className="dropdown-toggle"><span>Graphs</span></a>
+                    </ListGroup.Item>
+                    <ListGroup>
+                      <ListGroup className="sub-menu collapse" id="graphs">
+                        <ListGroup.Item> <NavLink to="/graphs/create">Create</NavLink></ListGroup.Item>
+                        <ListGroup.Item> <NavLink to="/graphs/">List</NavLink></ListGroup.Item>
+                      </ListGroup>
+                    </ListGroup>
+
+                    <ListGroup.Item>
                       <a href="#probes" data-bs-toggle="collapse" aria-expanded="false" className="dropdown-toggle"><span>Probes</span></a>
                     </ListGroup.Item>
                     <ListGroup>
                       <ListGroup className="sub-menu collapse" id="probes">
                         <ListGroup.Item> <NavLink to="/probes/create">Create</NavLink></ListGroup.Item>
                         <ListGroup.Item> <NavLink to="/probes/">List</NavLink></ListGroup.Item>
-                        <ListGroup.Item> <NavLink to="/probes/search">Search</NavLink></ListGroup.Item>
                       </ListGroup>
                     </ListGroup>
 
@@ -72,7 +82,6 @@ function App() {
                       <ListGroup className="sub-menu collapse" id="zones">
                         <ListGroup.Item> <NavLink to="/zones/create">Create</NavLink></ListGroup.Item>
                         <ListGroup.Item> <NavLink to="/zones/list">List</NavLink></ListGroup.Item>
-                        <ListGroup.Item> <NavLink to="/zones/search">Search</NavLink></ListGroup.Item>
                       </ListGroup>
                     </ListGroup>
 
@@ -91,6 +100,7 @@ function App() {
                 <Route path="/data/probe/:id" element={<SimpleGraphWrapper />}/>
                 <Route path="/probes" element={<ListProbes />}/>
                 <Route path="/probes/create" element={<ProbeForm />}/>
+                <Route path="/graphs/create" element={<GraphForm />}/>
 
               </Routes>
             </Container>

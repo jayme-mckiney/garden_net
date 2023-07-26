@@ -3,6 +3,7 @@ from flask_restful import Api
 from flask_cors import CORS
 import json
 from .probe_config import ProbeConfig, ProbeList
+from .probe_data_config import ProbeDataList
 from .zone_config import ZoneList
 from .data_points import DataPointRetrieval
 from logging.config import dictConfig
@@ -62,6 +63,7 @@ def create_app(db_session=None, debug=False):
   def shutdown_session(exception=None):
     db_session.remove()
 
+  api.add_resource(ProbeDataList, '/probe_datas')
   api.add_resource(ProbeList, '/probes')
   api.add_resource(ProbeConfig, '/probes/<id>')
   api.add_resource(ZoneList, '/zones')

@@ -15,9 +15,8 @@ _logger = logging.getLogger('')
 class ProbeConfig(Resource):
   def get(self, id):
     query_result = Probe.query.filter(Probe.id == id).first()
-    query_data_parts = ProbeData.query.filter(ProbeData.probe_id == id).all()
     data_parts = []
-    for data_part in query_data_parts:
+    for data_part in query_result.probe_data:
       data_parts.append(data_part.as_dict())
     probe_dict = query_result.as_dict()
     return {'probe': probe_dict, 'probe_data': data_parts}
@@ -25,9 +24,6 @@ class ProbeConfig(Resource):
   def put(self, id):
     json = request.get_json(force=True)
     probe = Probe.query.filter_by(id=id).first()
-    data_parts = []
-    if len(json.get('probe_data')) > 0:
-      data_parts = ProbeData.query.filter(ProbeData.probe_id == id).all()
     probe_dict = probe.as_dict()
     try:
       for key in probe_dict:
@@ -35,7 +31,7 @@ class ProbeConfig(Resource):
       for new_data_part in json.get('probe_data'):
         _logger.info(new_data_part)
         if new_data_part.get('id') != None:
-          for data_part in data_parts:
+          for data_part in probe.probe_data:
             if new_data_part.get('id') == data_part.id:
               setattr(data_part, 'name', new_data_part['name'])
               setattr(data_part, 'name_in_probe', new_data_part['name_in_probe'])

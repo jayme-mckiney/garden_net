@@ -39,7 +39,7 @@ class ListProbes extends Component {
       probes: null,
       edit: null
     };
-  }
+  } 
 
   componentDidMount() {
     let host = resolveHost()

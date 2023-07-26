@@ -21,7 +21,7 @@ class ZoneList(Resource):
   def post():
     json = request.get_json(force=True)
     try:
-      new_zone = Zone(name=json.name, description=json.description)
+      new_zone = Zone(name=json.get('name'), description=json.get('description'))
       db_session.add(new_zone)
       db_session.commit()
     except TypeError as e:

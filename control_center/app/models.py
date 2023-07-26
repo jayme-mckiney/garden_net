@@ -1,5 +1,6 @@
 from app.db import Base
 from sqlalchemy import Column, Integer, String, DateTime, Float, ForeignKey, PrimaryKeyConstraint, Boolean, ARRAY
+from sqlalchemy.orm import relationship
 
 
 class Zone(Base):
@@ -7,6 +8,8 @@ class Zone(Base):
   id = Column(Integer, primary_key = True)
   name = Column(String(50), unique = True)
   description = Column(String(128))
+
+  probes = relationship("Probe", back_populates="zone")
   def as_dict(self):
     return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
@@ -18,6 +21,9 @@ class Probe(Base):
   active = Column(Boolean)
   description = Column(String(128))
   url = Column(String(128))
+
+  zone = relationship('Zone')
+  probe_data = relationship("ProbeData", back_populates="probe")
   def as_dict(self):
     return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
@@ -28,6 +34,8 @@ class ProbeData(Base):
   probe_id = Column(Integer, ForeignKey('probes.id'))
   name_in_probe = Column(String(50))
   description = Column(String(128))
+
+  probe = relationship('Probe')
   def as_dict(self):
     return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
@@ -50,6 +58,8 @@ class Graph(Base):
   id = Column(Integer, primary_key = True)
   name = Column(String(50), unique = True)
   description = Column(String(128))
+
+  graph_lines = relationship("GraphLine", back_populates="graph")
   def as_dict(self):
     return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
@@ -57,6 +67,9 @@ class GraphLine(Base):
   __tablename__ = 'graphlines'
   graph_id = Column(Integer, ForeignKey('graphs.id'))
   probedata_id = Column(Integer, ForeignKey('probedatas.id'))
+
+  probe_data = relationship('ProbeData')
+  graph = relationship('Graph')
   __table_args__ = (
       PrimaryKeyConstraint(
           graph_id,
