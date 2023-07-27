@@ -4,10 +4,9 @@ import Form from 'react-bootstrap/Form';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 import Button from 'react-bootstrap/Button';
-import {resolveHost} from '../../helpers'
+import {resolveHost, get, request} from '../../helpers'
 
 class FormOption extends Component {
-
   render() {
     return(<option value="{this.props.value}">{this.props.label}</option>)
   }
@@ -35,30 +34,13 @@ class ProbeForm extends Component {
 
   componentWillMount() {
     let host = resolveHost()
-    fetch(`http://${host}/zones`, {
-      method: 'GET',
-      mode: 'cors',
-    })
-    .then((response) => response.json())
-    .then((data) => {
-      console.log(data.zones)
-      this.setState({'zones': data.zones})
-    })
-    .catch((error) => {
-      console.log(error)
-    })
+    get(`zones`,
+        (data) => this.setState({zones: data.zones}),
+        (e) => console.log(e))
     if (this.props.probe) {
-      fetch(`http://${host}/probes/${this.props.probe.id}`, {
-        method: 'GET',
-        mode: 'cors',
-      })
-      .then((response) => response.json())
-      .then((data) => {
-        this.setState({'probe_data': data.probe_data})
-      })
-      .catch((error) => {
-        console.log(error)
-      })
+      get(`probes/${this.props.probe.id}`,
+          (data) => this.setState({'probe_data': data.probe_data}),
+          (e) => console.log(e))
     }
   }
 
@@ -115,20 +97,11 @@ class ProbeForm extends Component {
       probe: probe,
       probe_data: new_array
     }
-    fetch(`http://${host}/${route}`, {
-      method: method,
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify(payload),
-      mode: 'cors'
-    })
-    .then((response) => response.json())
-    .then((data) => {
-      this.setState()
-      console.log(data)
-    })
-    .catch((error) => {
-      console.log(error)
-    })
+    request(`${route}`,
+            method,
+            payload,
+            (data) => this.setState(),
+            (e) => console.log(e))
   }
 
   render() {

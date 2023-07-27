@@ -23,7 +23,7 @@ class Probe(Base):
   url = Column(String(128))
 
   zone = relationship('Zone')
-  probe_data = relationship("ProbeData", back_populates="probe")
+  probe_datas = relationship("ProbeData", back_populates="probe")
   def as_dict(self):
     return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
@@ -75,3 +75,5 @@ class GraphLine(Base):
           graph_id,
           probedata_id),
       {})
+  def as_dict(self):
+    return {c.name: getattr(self, c.name) for c in self.__table__.columns}

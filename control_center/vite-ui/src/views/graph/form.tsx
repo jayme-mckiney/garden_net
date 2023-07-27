@@ -5,7 +5,7 @@ import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
-import {resolveHost} from '../../helpers'
+import {resolveHost, get, request} from '../../helpers'
 
 class GraphForm extends Component {
   constructor(props) {
@@ -34,61 +34,37 @@ class GraphForm extends Component {
   componentDidMount() {
     let host = resolveHost()
     if (this.props.edit === true) {
-      fetch(`http://${host}/graph/${this.props.id}`, {
-        method: "get",
-        mode: 'cors'
-      })
-      .then((response) => response.json())
-      .then((data) => {
-        this.setState({graph: data.graph, graph_lines: data.graph_lines})
-        console.log(data)
-      })
-      .catch((error) => {
-        console.log(error)
-      })
+      get(`graph/${this.props.id}`,
+          (data) => this.setState({graph: data.graph, graph_lines: data.graph_lines}),
+          (e) => console.log(e))
     }
-    fetch(`http://${host}/zones`, {
-        method: "get",
-        mode: 'cors'
-      })
-      .then((response) => response.json())
-      .then((data) => {
-        this.setState({zones: data.zones})
-      })
-      .catch((error) => {
-        console.log(error)
-    })
-    fetch(`http://${host}/probes`, {
-        method: "get",
-        mode: 'cors'
-      })
-      .then((response) => response.json())
-      .then((data) => {
-        this.setState({probes: data.probes})
-      })
-      .catch((error) => {
-        console.log(error)
-    })
-    fetch(`http://${host}/probe_datas`, {
-        method: "get",
-        mode: 'cors'
-      })
-      .then((response) => response.json())
-      .then((data) => {
+    get(`zones`,
+        (data) => this.setState({zones: data.zones}),
+        (e) => console.log(e))
+    get(`probes`,
+        (data) => this.setState({probes: data.probes}),
+        (error) => console.log())
+    get(`probe_datas`, (data) => {
         let probeDataByID = {}
         for (let i in data.probe_datas) {
           let pd = data.probe_datas[i]
           probeDataByID[pd.id] = pd
         }
         this.setState({probe_datas: data.probe_datas, probeDataByID: probeDataByID})
-      })
-      .catch((error) => {
-        console.log(error)
-    })
+      }, (error) => console.log(error))
   }
 
-  handleInput = (e) => {
-    console.log(e)
+  handleNameInput = (e) => {
+    let graph = {}
+    Object.assign(graph, this.state.graph)
+    graph.name = e.target.value
+    this.setState({graph: graph})
+  }
+  handleDescInput = (e) => {
+    let graph = {}
+    Object.assign(graph, this.state.graph)
+    graph.description = e.target.value
+    this.setState({graph: graph})
   }
   openModal = (e) => {
     this.setState({showModal: true})
@@ -99,13 +75,13 @@ class GraphForm extends Component {
       if (this.state.selectedProbeData == -1) {
         alert('Please select a probe data to represent a line in the graph first')
         state_adjustment = {}
-      } else if (this.state.graph_lines.filter(x => x.probe_data_id == this.state.selectedProbeData).length) {
+      } else if (this.state.graph_lines.filter(x => x.probedata_id == this.state.selectedProbeData).length) {
         alert("That probe data is already selected for this graph")
         state_adjustment = {}
       } else {
         // save selection
         let new_graph_lines = this.state.graph_lines
-        new_graph_lines.push({id: null, graph_id: null, probe_data_id: this.state.selectedProbeData})
+        new_graph_lines.push({graph_id: null, probedata_id: this.state.selectedProbeData})
         console.log(new_graph_lines)
         state_adjustment.graph_lines = new_graph_lines
       }
@@ -122,9 +98,32 @@ class GraphForm extends Component {
   }
 
   handleSelectProbeData = (e) => {
-    let probe_data_id = e.target.value
-    console.log(probe_data_id)
-    this.setState({selectedProbeData: probe_data_id})
+    let probedata_id = e.target.value
+    console.log(probedata_id)
+    this.setState({selectedProbeData: probedata_id})
+  }
+
+  save = (e) => {
+    debugger
+    const method = this.props.edit ? "PUT" : "POST"
+    const path = this.props.edit ? `graphs/${this.state.graph.id}` : 'graphs'
+    let graph = {}
+    Object.assign(graph, this.state.graph)
+    let graph_lines = []
+    for(let i = 0; i < this.state.graph_lines.length; i++) {
+      let new_line = {}
+      Object.assign(new_line, this.state.graph_lines[i])
+      graph_lines.push(new_line)
+    }
+    let payload = {
+      graph: graph,
+      graph_lines: graph_lines
+    }
+    request(path,
+            method,
+            payload,
+            (data) => this.setState(),
+            (e) => console.log(e))
   }
 
 
@@ -135,7 +134,7 @@ class GraphForm extends Component {
       cancelButton = <Button onClick={this.props.cancel} type="button">Cancel</Button>
     }
 
-    let probe_data_form  = this.state.graph_lines.map(gl => <div key={gl.probe_data_id} data-value={gl.probe_data_id}>{this.state.probeDataByID[gl.probe_data_id].name}</div>)
+    let probe_data_form  = this.state.graph_lines.map(gl => <div key={gl.probedata_id} data-value={gl.probedata_id}>{this.state.probeDataByID[gl.probedata_id].name}</div>)
 
     let zoneOptions = this.state.zones.map(z => <option key={z.id} value={z.id}>{z.name}</option>)
 
@@ -190,11 +189,11 @@ class GraphForm extends Component {
         <Form>
           <Form.Group as={Col} controlId="graphNameId">
             <Form.Label>Graph Name</Form.Label>
-            <Form.Control name='name' value={this.state.graph.name} onChange={this.handleInput} placeholder="My graph" />
+            <Form.Control name='name' value={this.state.graph.name} onChange={this.handleNameInput} placeholder="My graph" />
           </Form.Group>
           <Form.Group controlId="graphDescriptionId">
             <Form.Label>Description</Form.Label>
-            <Form.Control name='description' value={this.state.graph.description} onChange={this.handleInput} placeholder="This graph shows whatever" />
+            <Form.Control name='description' value={this.state.graph.description} onChange={this.handleDescInput} placeholder="This graph shows whatever" />
           </Form.Group>
           <Form.Group controlId="graphLines">
             <Form.Label>Graph Lines</Form.Label>

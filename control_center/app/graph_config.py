@@ -18,7 +18,7 @@ class GraphList(Resource):
     dictionary_list = list(map(lambda r: r.as_dict(), results))
     return {'graphs': dictionary_list}, 200
 
-  def post():
+  def post(self):
     json = request.get_json(force=True)
     graph_json = json.get('graph')
     try:
@@ -27,7 +27,7 @@ class GraphList(Resource):
       db_session.commit()
       graph_lines_json = json.get('graph_lines', [])
       for graph_line in graph_lines_json:
-        new_graph_line = GraphLine(graph_id = graph.id, probedata_id = graph_line.get('probedata_id'))
+        new_graph_line = GraphLine(graph_id = new_graph.id, probedata_id = graph_line.get('probedata_id'))
         db_session.add(new_graph_line)
       db_session.commit()
     except TypeError as e:
@@ -57,7 +57,7 @@ class GraphConfig(Resource):
     try:
       for key in graph_dict:
         setattr(graph, key, json.get('graph').get(key))
-      for graph_line_json in graph_lines_json
+      for graph_line_json in graph_lines_json:
         if graph_line_json.get('id') != None:
           for graph_line in graph.graph_lines:
             if graph_line.id == graph_line_json.get('id'):

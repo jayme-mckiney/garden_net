@@ -9,3 +9,27 @@ export function resolveHost() {
 	return host
 }
 
+
+export function get(path, promise, errorPromise) {
+  const host = resolveHost()
+  fetch(`http://${host}/${path}`, {
+    method: "get",
+    mode: 'cors'
+  })
+  .then((response) => response.json())
+  .then(promise )
+  .catch(errorPromise)
+}
+
+export function request(path, method, payload, promise, errorPromise) {
+  const host = resolveHost()
+  fetch(`http://${host}/${path}`, {
+    method: method,
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(payload),
+    mode: 'cors'
+  })
+  .then((response) => response.json())
+  .then(promise)
+  .catch(errorPromise)
+}

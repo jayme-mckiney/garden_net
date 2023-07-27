@@ -16,7 +16,7 @@ class ProbeConfig(Resource):
   def get(self, id):
     query_result = Probe.query.filter(Probe.id == id).first()
     data_parts = []
-    for data_part in query_result.probe_data:
+    for data_part in query_result.probe_datas:
       data_parts.append(data_part.as_dict())
     probe_dict = query_result.as_dict()
     return {'probe': probe_dict, 'probe_data': data_parts}
@@ -31,7 +31,7 @@ class ProbeConfig(Resource):
       for new_data_part in json.get('probe_data'):
         _logger.info(new_data_part)
         if new_data_part.get('id') != None:
-          for data_part in probe.probe_data:
+          for data_part in probe.probe_datas:
             if new_data_part.get('id') == data_part.id:
               setattr(data_part, 'name', new_data_part['name'])
               setattr(data_part, 'name_in_probe', new_data_part['name_in_probe'])
