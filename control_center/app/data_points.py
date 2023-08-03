@@ -8,7 +8,7 @@ from flask_restful import (
   )
 import json
 import re
-from app.models import DataPoint, Probe, ProbeData
+from app.models import DataPoint, Probe, ProbeData, Graph
 from sqlalchemy.sql import or_
 import logging
 _logger = logging.getLogger('')
@@ -41,6 +41,7 @@ class DataSet():
 class DataPointRetrieval(Resource):
   def post(self):
     request_json = request.get_json(force=True)
+    graph_id = request_json.get('graph_id')
     probe_ids = request_json.get('probe_ids', [])
     probedata_ids = request_json.get('probedata_ids', [])
     start_time = request_json.get('start_time')
@@ -51,6 +52,10 @@ class DataPointRetrieval(Resource):
       query_result = Probe.query.filter(Probe.zone_id == zone_id).all()
       probe_ids_from_zone = list(map(lambda x: x.id, query_result))
       probe_ids.extend(probe_ids_from_zone)
+    if graph_id:
+      query_result = Graph.query.filter(Graph.id == graph_id).first()
+      for line in query_result.graph_lines:
+        probedata_ids.append(line.probedata_id)
     filters = []
     if start_time:
       filters.append(DataPoint.observation_datetime >= start_time)

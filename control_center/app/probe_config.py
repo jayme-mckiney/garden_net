@@ -7,6 +7,7 @@ from flask_restful import (
     abort,
     marshal
   )
+import sqlalchemy
 from app.models import Probe, ProbeData
 from app.db import db_session
 import logging
@@ -15,6 +16,9 @@ _logger = logging.getLogger('')
 class ProbeConfig(Resource):
   def get(self, id):
     query_result = Probe.query.filter(Probe.id == id).first()
+    if query_result == None: 
+      message = {'message': 'Probe not found'}
+      abort(404, **message)
     data_parts = []
     for data_part in query_result.probe_datas:
       data_parts.append(data_part.as_dict())
@@ -24,6 +28,9 @@ class ProbeConfig(Resource):
   def put(self, id):
     json = request.get_json(force=True)
     probe = Probe.query.filter_by(id=id).first()
+    if probe == None:
+      message = {'message': 'Probe not found'}
+      abort(404, **message)
     probe_dict = probe.as_dict()
     try:
       for key in probe_dict:
@@ -50,11 +57,30 @@ class ProbeConfig(Resource):
     except TypeError as e:
       error_data = {'message': 'payload does no match db schema'}
       abort(400, **error_data)
+    except sqlalchemy.exc.IntegrityError as e:
+      error_data = {'message': e.orig.args[1]}
+      abort(400, **error_data)
     except Exception as e:
       error_data = {'message': 'Something went wrong'}
       abort(500, **error_data)
-      _logger.error(error_data)
+      _logger.error(e)
     return ({}, 200)
+
+  def delete(self, id):
+    probe = Probe.query.filter_by(id=id).first()
+    if probe == None:
+      message = {'message': 'Probe not found'}
+      abort(404, **message)
+    try:
+      for probe_data in probe.probe_datas:
+        db_session.delete(probe_data)
+      db_session.delete(probe)
+      db_session.commit()
+    except Exception as e:
+      error_data = {'message': 'Something went wrong'}
+      abort(500, **error_data)
+      _logger.error(e)
+
 
 class ProbeList(Resource):
   def post(self):
@@ -72,6 +98,9 @@ class ProbeList(Resource):
     except TypeError as e:
       _logger.error(e)
       error_data = {'message': 'payload does no match db schema'}
+      abort(400, **error_data)
+    except sqlalchemy.exc.IntegrityError as e:
+      error_data = {'message': e.orig.args[1]}
       abort(400, **error_data)
     except Exception as e:
       error_data = {'message': 'Something went wrong'}

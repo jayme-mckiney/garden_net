@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {CanvasJSChart} from 'canvasjs-react-charts'
-import {resolveHost} from '../../helpers'
+import {request} from '../../helpers'
 import { useParams } from "react-router";
 
 export class Graph extends Component {
@@ -9,20 +9,10 @@ export class Graph extends Component {
   }
 
   componentDidMount() {
-    let host = resolveHost()
-    fetch(`http://${host}/data`, {
-      method: "POST",
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify(this.props.queryInfo),
-      mode: 'cors'
-    })
-    .then((response) => response.json())
-    .then((data) => {
-      this.setState({data: data})
-    })
-    .catch((error) => {
-      console.log(error)
-    })
+    request('/data', 'POST', this.props.queryInfo,
+            (data) => this.setState({data: data}),
+            (e) => console.log(e)
+    )
   }
 
   render() {
@@ -58,8 +48,7 @@ export class Graph extends Component {
     console.log(options)
     
     return (
-    <div>
-      <h1>React Line Chart</h1>
+    <div style={{ marginTop: 20 }}>
       <CanvasJSChart options = {options} 
         /* onRef={ref => this.chart = ref} */
       />
@@ -69,9 +58,24 @@ export class Graph extends Component {
   }
 }
 
-export const SimpleGraphWrapper = () => {
+export const ProbeGraphWrapper = () => {
   let { id } = useParams();
   return (<Graph queryInfo={{probe_ids: [id]}} />)
+}
+
+export const ProbeDataGraphWrapper = () => {
+  let { id } = useParams();
+  return (<Graph queryInfo={{probedata_ids: [id]}} />)
+}
+
+export const GraphGraphWrapper = () => {
+  let { id } = useParams();
+  return (<Graph queryInfo={{graph_id: [id]}} />)
+}
+
+export const ZoneGraphWrapper = () => {
+  let { id } = useParams();
+  return (<Graph queryInfo={{zone_id: [id]}} />)
 }
 
                    

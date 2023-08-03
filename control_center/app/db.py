@@ -1,18 +1,20 @@
 from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base, declared_attr
-from sqlalchemy.orm import scoped_session, sessionmaker
+from sqlalchemy.orm import scoped_session, sessionmaker, declarative_base
 from sqlalchemy import Column, Integer
 import os
 
 sql_user = os.environ.get('SQL_USER')
 sql_pass = os.environ.get('SQL_PASS')
+is_testing = os.environ.get('TEST_RUN', False)
 sql_host = "localhost"
 # check if containerized dev env
 if os.getuid() == 999:
     sql_host = 'mydb'
 
-mysql_connection_string = 'mysql+pymysql://{sql_user}:{sql_pass}@{sql_host}/gardennet'.format(
-    sql_user=sql_user, sql_pass=sql_pass, sql_host=sql_host)
+database_name = 'gardennet_test' if is_testing else 'gardennet'
+
+mysql_connection_string = 'mysql+pymysql://{sql_user}:{sql_pass}@{sql_host}/{database_name}'.format(
+    sql_user=sql_user, sql_pass=sql_pass, sql_host=sql_host, database_name=database_name)
 
 engine = create_engine(mysql_connection_string, echo=False)
 db_session = scoped_session(sessionmaker(autocommit=False,
@@ -27,6 +29,9 @@ def init_db():
     # you will have to import them first before calling init_db()
     import app.models
     Base.metadata.create_all(bind=engine)
+    zone = app.models.Zone(name='Main', description='Primary grow zone')
+    db_session.add(zone)
+    db_session.commit()
 
 def drop_db():
     # import all modules here that might define models so that
@@ -53,10 +58,6 @@ def populate_dev_data(interval_mins=2, hours_to_pop=2):
             last_point = new_point
             data_points.append(last_point)
         return data_points
-
-    zone = Zone(name='Main', description='Primary grow zone')
-    db_session.add(zone)
-    db_session.commit()
 
     start_time = datetime.now() - timedelta(hours=hours_to_pop)
     entries_to_generate = int(hours_to_pop * 60 / interval_mins)

@@ -43,6 +43,9 @@ class GraphList(Resource):
 class GraphConfig(Resource):
   def get(self, id):
     result = Graph.query.filter(Graph.id == id).first()
+    if result == None:
+      message = {'message': 'Graph not found'}
+      abort(404, **message)
     graph_lines = []
     for graph_line in result.graph_lines:
       graph_lines.append(graph_line.as_dict())
@@ -51,19 +54,25 @@ class GraphConfig(Resource):
 
   def put(self, id):
     graph = Graph.query.filter(Graph.id == id).first()
+    if graph == None:
+      message = {'message': 'Graph not found'}
+      abort(404, **message)
     graph_dict = graph.as_dict()
     json = request.get_json(force=True)
     graph_lines_json = json.get('graph_lines', [])
+    removed_lines= json.get('removed_lines', [])
     try:
+      # set name and desc
       for key in graph_dict:
         setattr(graph, key, json.get('graph').get(key))
+      # remove lines not present in the json
+      for graph_line in graph.graph_lines:
+        if graph_line.as_dict() not in graph_lines_json:
+          db_session.delete(graph_line)
+      # add lines not present in the model
+      graph_lines_dict = map(lambda x: x.as_dict(), graph.graph_lines)
       for graph_line_json in graph_lines_json:
-        if graph_line_json.get('id') != None:
-          for graph_line in graph.graph_lines:
-            if graph_line.id == graph_line_json.get('id'):
-              graph_line.probedata_id = graph_line_json.get('probedata_id')
-              break
-        else:
+        if graph_line_json not in graph_lines_dict:
           new_graph_line = GraphLine(graph_id = graph.id, probedata_id = graph_line_json.get('probedata_id'))
           db_session.add(new_graph_line)
       db_session.commit()
@@ -75,3 +84,16 @@ class GraphConfig(Resource):
       error_data = {'message': 'Something went wrong'}
       abort(500, **error_data)
     return ({}, 200)
+
+  def delete(self, id):
+    graph = Graph.query.filter(Graph.id == id).first()
+    if graph == None:
+      message = {'message': 'Graph not found'}
+      abort(404, **message)
+    try:
+      db_session.delete(graph)
+      db_session.commit()
+    except Exception as e:
+      error_data = {'message': 'Something went wrong'}
+      abort(500, **error_data)
+    return({}, 200)

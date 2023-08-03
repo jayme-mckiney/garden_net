@@ -1,5 +1,5 @@
 .App {
-  text-align: center;
+
 }
 
 .App-logo {
@@ -35,4 +35,15 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+.bi-trash3 {
+  cursor: pointer;
+}
+.bi-pen {
+  cursor: pointer;
+}
+
+.btn {
+  margin: 1px;
 }

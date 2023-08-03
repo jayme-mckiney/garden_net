@@ -5,16 +5,18 @@ import json
 from .probe_config import ProbeConfig, ProbeList
 from .graph_config import GraphConfig, GraphList
 from .probe_data_config import ProbeDataList, ProbeDataHeirarchy
-from .zone_config import ZoneList
+from .zone_config import ZoneList, ZoneConfig
 from .data_points import DataPointRetrieval
 from logging.config import dictConfig
 import logging
 
 def create_app(db_session=None, debug=False):
   """Initialize the core application."""
+  logging_level = 'INFO'
   if debug is True:
     logging.getLogger('werkzeug').handlers.clear()
     logging.getLogger().handlers.clear()
+    logging_level = 'DEBUG'
 
   dictConfig({
     'version': 1,
@@ -39,7 +41,7 @@ def create_app(db_session=None, debug=False):
     },
     'loggers': {
       '': {
-          'level': 'DEBUG',
+          'level': logging_level,
           'handlers': ['wsgi', 'file'],
       },
       "flask": {"level": "WARNING"},
@@ -69,6 +71,7 @@ def create_app(db_session=None, debug=False):
   api.add_resource(ProbeList, '/probes')
   api.add_resource(ProbeConfig, '/probes/<id>')
   api.add_resource(ZoneList, '/zones')
+  api.add_resource(ZoneConfig, '/zones/<id>')
   api.add_resource(DataPointRetrieval, '/data')
   api.add_resource(GraphList, '/graphs')
   api.add_resource(GraphConfig, '/graphs/<id>')

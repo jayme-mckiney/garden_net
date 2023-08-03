@@ -5,9 +5,11 @@ import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
-import {resolveHost, get, request} from '../../helpers'
+import {get, request, TrashIcon} from '../../helpers'
+import { useParams } from "react-router";
 
-class GraphForm extends Component {
+
+export class GraphForm extends Component {
   constructor(props) {
     super(props)
     let newGraph = {
@@ -32,9 +34,8 @@ class GraphForm extends Component {
   }
 
   componentDidMount() {
-    let host = resolveHost()
     if (this.props.edit === true) {
-      get(`graph/${this.props.id}`,
+      get(`graphs/${this.props.id}`,
           (data) => this.setState({graph: data.graph, graph_lines: data.graph_lines}),
           (e) => console.log(e))
     }
@@ -44,14 +45,15 @@ class GraphForm extends Component {
     get(`probes`,
         (data) => this.setState({probes: data.probes}),
         (error) => console.log())
-    get(`probe_datas`, (data) => {
-        let probeDataByID = {}
-        for (let i in data.probe_datas) {
-          let pd = data.probe_datas[i]
-          probeDataByID[pd.id] = pd
-        }
-        this.setState({probe_datas: data.probe_datas, probeDataByID: probeDataByID})
-      }, (error) => console.log(error))
+    get(`probe_datas`, 
+        (data) => {
+          let probeDataByID = {}
+          for (let i in data.probe_datas) {
+            let pd = data.probe_datas[i]
+            probeDataByID[pd.id] = pd
+          }
+          this.setState({probe_datas: data.probe_datas, probeDataByID: probeDataByID})
+        }, (error) => console.log(error))
   }
 
   handleNameInput = (e) => {
@@ -103,21 +105,31 @@ class GraphForm extends Component {
     this.setState({selectedProbeData: probedata_id})
   }
 
+  removeLine = (probedata_id, e) => {
+    let newArray = []
+    for ( let graphLine of this.state.graph_lines) {
+      if( graphLine.probedata_id != probedata_id) {
+        newLine = Object.assign({}, graphLine)
+        newArray.push(newLine)
+      }
+    }
+    this.setState({graph_lines: newArray})
+  }
+
   save = (e) => {
-    debugger
+    if (this.state.graph_lines.length == 0) {
+      let alerts = []
+      for(let i in this.state.alerts)
+        alerts.push(copy(this.state.alerts[i]))
+      alerts.push({type: "warning", message: "Please add a line first"})
+      this.setState({alerts: alerts})
+      return
+    }
     const method = this.props.edit ? "PUT" : "POST"
     const path = this.props.edit ? `graphs/${this.state.graph.id}` : 'graphs'
-    let graph = {}
-    Object.assign(graph, this.state.graph)
-    let graph_lines = []
-    for(let i = 0; i < this.state.graph_lines.length; i++) {
-      let new_line = {}
-      Object.assign(new_line, this.state.graph_lines[i])
-      graph_lines.push(new_line)
-    }
     let payload = {
-      graph: graph,
-      graph_lines: graph_lines
+      graph: this.state.graph,
+      graph_lines: this.state.graph_lines
     }
     request(path,
             method,
@@ -133,8 +145,15 @@ class GraphForm extends Component {
     if (this.props.edit === true) {
       cancelButton = <Button onClick={this.props.cancel} type="button">Cancel</Button>
     }
-
-    let probe_data_form  = this.state.graph_lines.map(gl => <div key={gl.probedata_id} data-value={gl.probedata_id}>{this.state.probeDataByID[gl.probedata_id].name}</div>)
+    let alerts = []
+    for( let i in this.state.alerts) {
+      const type = this.state.alerts[i].type
+      const message = this.state.alerts[i].message
+      alerts.push(<div class={`alert alert-${type}`} role="alert">{message}</div>)
+    }
+    let probe_data_form = null
+    if(this.state.probe_datas.length > 0) 
+      probe_data_form  = this.state.graph_lines.map(gl => <div key={gl.probedata_id} data-value={gl.probedata_id}><TrashIcon onClick={this.removeLine.bind(this, gl.probedata_id)} /> {this.state.probeDataByID[gl.probedata_id].name}</div>)
 
     let zoneOptions = this.state.zones.map(z => <option key={z.id} value={z.id}>{z.name}</option>)
 
@@ -152,7 +171,8 @@ class GraphForm extends Component {
     probeOptions.unshift(<option key={-1} value={-1}>Select</option>)
     probeDataOptions.unshift(<option key={-1} value={-1}>Select</option>)
     return(
-      <div>
+      <div style={{marginTop: 20}}>
+        {alerts}
         <Modal show={this.state.showModal} onHide={this.handleClose}>
           <Modal.Header closeButton>
             <Modal.Title>Select a piece of probe data</Modal.Title>
@@ -206,9 +226,9 @@ class GraphForm extends Component {
       </div>
     )
   }
-
-
-
 }
 
-export default GraphForm
+export const GraphFormEdit = () => {
+  let { id } = useParams();
+  return (<GraphForm id={id} edit={true} />)
+}

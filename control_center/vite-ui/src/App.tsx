@@ -2,7 +2,7 @@ import React from 'react';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.min';
-
+import './App.css'
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Navbar from 'react-bootstrap/Navbar';
@@ -21,10 +21,11 @@ import {
 import Welcome from './views/welcome';
 import MonitorHome from './views/monitor/home'
 import ProbeForm from './views/probe/form'
-import GraphForm from './views/graph/form'
+import {GraphForm, GraphFormEdit} from './views/graph/form'
+import ListGraphs from './views/graph/list'
 import MonitorSearchForm from './views/monitor/search'
 import ListProbes from './views/probe/list'
-import {SimpleGraphWrapper} from './views/monitor/graph'
+import {ProbeGraphWrapper, ProbeDataGraphWrapper, GraphGraphWrapper, ZoneGraphWrapper} from './views/monitor/graph'
 
 function App() {
   return (
@@ -97,10 +98,15 @@ function App() {
               <Routes>
                 <Route path="/" element={<Welcome />}/>
                 <Route path="/data/home" element={<MonitorHome />}/>
-                <Route path="/data/probe/:id" element={<SimpleGraphWrapper />}/>
+                <Route path="/data/probe/:id" element={<ProbeGraphWrapper />}/>
+                <Route path="/data/probedata/:id" element={<ProbeDataGraphWrapper />}/>
+                <Route path="/data/zone/:id" element={<ZoneGraphWrapper />}/>
+                <Route path="/data/graph/:id" element={<GraphGraphWrapper />}/>
                 <Route path="/probes" element={<ListProbes />}/>
                 <Route path="/probes/create" element={<ProbeForm />}/>
                 <Route path="/graphs/create" element={<GraphForm />}/>
+                <Route path="/graphs/:id" element={<GraphFormEdit edit={true} />}/>
+                <Route path="/graphs" element={<ListGraphs />}/>
 
               </Routes>
             </Container>

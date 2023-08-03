@@ -26,10 +26,6 @@ class ProbeForm extends Component {
     Object.assign(new_probe, props.probe);
     let probe_data = []
     this.state = {'probe': new_probe, 'probe_data': probe_data, 'zones': [] }
-    this.handleInput  = this.handleInput.bind(this)
-    this.handleProbeDataInput  = this.handleProbeDataInput.bind(this)
-    this.addProbeData  = this.addProbeData.bind(this)
-    this.save = this.save.bind(this)
   }
 
   componentWillMount() {
@@ -44,7 +40,7 @@ class ProbeForm extends Component {
     }
   }
 
-  addProbeData() {
+  addProbeData = () => {
     let new_data_part = {
       id: null,
       name: null,
@@ -57,7 +53,7 @@ class ProbeForm extends Component {
     this.setState({probe_data: data_parts})
   }
 
-  handleInput(event) {
+  handleInput = (event) => {
     const target = event.target;
     const value = target.name === "active" ? target.checked : target.value;
     const name = target.name;
@@ -67,7 +63,7 @@ class ProbeForm extends Component {
     this.setState({'probe': new_state});
   }
 
-  handleProbeDataInput(event) {
+  handleProbeDataInput = (event) => {
     const target = event.target;
     const name = target.name;
     const i = parseInt(target.getAttribute('data-index'))
@@ -81,7 +77,7 @@ class ProbeForm extends Component {
     this.setState({'probe_data': new_array});
   }
 
-  save() {
+  save = () => {
     let host = resolveHost()
     let route = this.props.edit ? `probes/${this.state.probe.id}` : 'probes'
     let method = this.props.edit ? 'PUT' : 'POST'
@@ -105,7 +101,7 @@ class ProbeForm extends Component {
   }
 
   render() {
-    let submitText = this.props.edit ? "Save" : "Create"
+    const submitText = this.props.edit ? "Save" : "Create"
     let cancelButton = null;
     if (this.props.edit === true) {
       cancelButton = <Button onClick={this.props.cancel} type="button">Cancel</Button>

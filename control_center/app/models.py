@@ -16,22 +16,22 @@ class Zone(Base):
 class Probe(Base):
   __tablename__ = 'probes'
   id = Column(Integer, primary_key = True)
-  name = Column(String(50), unique = True)
-  zone_id = Column(Integer, ForeignKey('zones.id'))
+  name = Column(String(50), unique = True, nullable = False)
+  zone_id = Column(Integer, ForeignKey('zones.id'), nullable = False)
   active = Column(Boolean)
   description = Column(String(128))
   url = Column(String(128))
 
   zone = relationship('Zone')
-  probe_datas = relationship("ProbeData", back_populates="probe")
+  probe_datas = relationship("ProbeData", back_populates="probe", cascade="all, delete")
   def as_dict(self):
     return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
 class ProbeData(Base):
   __tablename__ = 'probedatas'
   id = Column(Integer, primary_key = True)
-  name = Column(String(50), unique = True)
-  probe_id = Column(Integer, ForeignKey('probes.id'))
+  name = Column(String(50), unique = True, nullable = False)
+  probe_id = Column(Integer, ForeignKey('probes.id'), nullable = False)
   name_in_probe = Column(String(50))
   description = Column(String(128))
 
@@ -56,10 +56,10 @@ class DataPoint(Base):
 class Graph(Base):
   __tablename__= 'graphs'
   id = Column(Integer, primary_key = True)
-  name = Column(String(50), unique = True)
+  name = Column(String(50), unique = True, nullable = False)
   description = Column(String(128))
 
-  graph_lines = relationship("GraphLine", back_populates="graph")
+  graph_lines = relationship("GraphLine", back_populates="graph", cascade="all, delete")
   def as_dict(self):
     return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 

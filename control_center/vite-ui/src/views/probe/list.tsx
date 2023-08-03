@@ -3,33 +3,29 @@ import React, { Component } from 'react';
 import Table from 'react-bootstrap/Table';
 import Col from 'react-bootstrap/Col';
 
-import {resolveHost} from '../../helpers'
+import { get} from '../../helpers'
 import ProbeForm  from './form'
 
 
-class ProbeEntry extends Component {
-  render() {
-    let probe = this.props.probeData
-    return(
-      <tr onClick={this.props.onClick}>
-        <td>{probe.name}</td>
-        <td>{probe.description}</td>
-        <td>{probe.url}</td>
-        <td>{probe.active? "Active" : "Deactivated"}</td>
-      </tr>
-    )
-  }
+function ProbeEntry(props) {
+  let probe = props.probeData
+  return(
+    <tr onClick={props.onClick}>
+      <td>{probe.name}</td>
+      <td>{probe.description}</td>
+      <td>{probe.url}</td>
+      <td>{probe.active? "Active" : "Deactivated"}</td>
+    </tr>
+  )
 }
 
-class EditFormWrapper extends Component {
-  render() {
-    return (
-      <tr>
-      <td colSpan="4">
-        <ProbeForm edit={true} cancel={this.props.cancel} probe={this.props.probe}/> </td>
-      </tr>
-    )
-  }
+function EditFormWrapper(props) {
+  return (
+    <tr>
+    <td colSpan="4">
+      <ProbeForm edit={true} cancel={props.cancel} probe={props.probe}/> </td>
+    </tr>
+  )
 }
 
 class ListProbes extends Component {
@@ -42,30 +38,19 @@ class ListProbes extends Component {
   } 
 
   componentDidMount() {
-    let host = resolveHost()
-    fetch(`http://${host}/probes`, {
-      method: 'GET',
-      mode: 'cors',
-    })
-    .then((response) => response.json())
-    .then((data) => {
-      this.setState({probes: data.probes})
-    })
-    .catch((error) => {
-      console.log(error)
-    })
+    get('probes', (data) => this.setState({probes: data.probes}), (e) => console.log(e))
   }
 
-  startEdit(id, event) {
+  startEdit = (id, event) => {
     this.setState({edit: id});
   }
 
-  cancelEdit(event) {
+  cancelEdit = (event) => {
     this.setState({edit: null});
   }
 
   render() {
-    let content =  "<h1>Loading</h1>"
+    let content =  null
     if (this.state.probes != null) {
       content = []
 
@@ -79,7 +64,7 @@ class ListProbes extends Component {
     }
 
     return (
-      <Table striped bordered hover>
+      <Table style={{marginTop: 20}} striped bordered hover>
         <thead>
           <tr>
             <th>Name</th>
