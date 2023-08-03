@@ -10,6 +10,7 @@ import json
 import re
 from app.models import DataPoint, Probe, ProbeData, Graph
 from sqlalchemy.sql import or_
+from datetime import datetime
 import logging
 _logger = logging.getLogger('')
 
@@ -58,9 +59,9 @@ class DataPointRetrieval(Resource):
         probedata_ids.append(line.probedata_id)
     filters = []
     if start_time:
-      filters.append(DataPoint.observation_datetime >= start_time)
+      filters.append(DataPoint.observation_datetime >= datetime.fromtimestamp(start_time / 1000)) # js time stamp are counted in ms
     if end_time:
-      filters.append(DataPoint.observation_datetime <= end_time)
+      filters.append(DataPoint.observation_datetime <= datetime.fromtimestamp(end_time / 1000)) # js time stamp are counted in ms
     data = DataSet()
     query_result = ProbeData.query.filter(or_(ProbeData.probe_id.in_(probe_ids), ProbeData.id.in_(probedata_ids) ) ).all()
     probedatas = []
@@ -72,5 +73,5 @@ class DataPointRetrieval(Resource):
         long_key = probedata.get('name')
         value = entry.data
         timestamp = entry.observation_datetime.timestamp()
-        data.push_coords(key=long_key, x=timestamp * 1000, y=value)
+        data.push_coords(key=long_key, x=timestamp * 1000, y=value) # js time stamp are counted in ms
     return(data.get_data_points(), 200)

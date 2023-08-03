@@ -13,7 +13,7 @@ while True:
   for probe in active_probes:
     r = requests.get(f"http://{probe.url}/")
     if r.status_code == 200:
-      probe_datas = ProbeData.query.filter(ProbeData.probe_id == probe.id).all()
+      probedatas = ProbeData.query.filter(ProbeData.probe_id == probe.id).all()
       json = r.json()
       for probedata in probedatas:
         datapoint = DataPoint(observation_datetime = datetime.now(), probedata_id = probedata.id, data = json.get(probedata.name_in_probe))

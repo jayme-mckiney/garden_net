@@ -12,8 +12,10 @@ from app.models import (
   Probe,
   ProbeData,
   Graph,
-  GraphLine
+  GraphLine,
+  DataPoint
 )
+from datetime import datetime, timedelta
     
 
 @pytest.fixture(scope='module')
@@ -37,6 +39,13 @@ def test_probe_1():
   db_session.add(pd1)
   db_session.add(pd2)
   db_session.commit()
+  datapoint_list =[]
+  start_time = datetime(year=2023, month=8, day=2)
+  for i in range(20):
+    datapoint_list.append(DataPoint(observation_datetime=start_time + timedelta(minutes=i), probedata_id=pd1.id, data=i))
+    datapoint_list.append(DataPoint(observation_datetime=start_time + timedelta(minutes=i), probedata_id=pd2.id, data=i+20))
+  db_session.add_all(datapoint_list)
+  db_session.commit()
   return probe1
 
 @pytest.fixture(scope='module')
@@ -48,6 +57,13 @@ def test_probe_2():
   pd4 = ProbeData(name='test data4', name_in_probe='thing4', description='', probe_id=probe.id)
   db_session.add(pd3)
   db_session.add(pd4)
+  db_session.commit()
+  datapoint_list =[]
+  start_time = datetime(year=2023, month=8, day=2)
+  for i in range(20):
+    datapoint_list.append(DataPoint(observation_datetime=start_time + timedelta(minutes=i), probedata_id=pd3.id, data=i+40))
+    datapoint_list.append(DataPoint(observation_datetime=start_time + timedelta(minutes=i), probedata_id=pd4.id, data=i+60))
+  db_session.add_all(datapoint_list)
   db_session.commit()
   return probe
 
@@ -63,3 +79,7 @@ def test_graph_1(test_probe_1):
   db_session.commit()
   return graph
 
+
+@pytest.fixture(scope='module')
+def start_time():
+  return datetime(year=2023, month=8, day=2)
