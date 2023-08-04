@@ -13,7 +13,8 @@ from app.models import (
   ProbeData,
   Graph,
   GraphLine,
-  DataPoint
+  DataPoint,
+  SingleDataMonitor
 )
 from datetime import datetime, timedelta
     
@@ -66,6 +67,19 @@ def test_probe_2():
   db_session.add_all(datapoint_list)
   db_session.commit()
   return probe
+
+@pytest.fixture(scope='module')
+def test_monitor_1(test_probe_1):
+  monitor = SingleDataMonitor(
+    name = 'test monitor',
+    probedata_id = test_probe_1.probe_datas[0].id,
+    tolerable_lower_bound = 6,
+    tolerable_upper_bound = 12,
+    refresh_interval = 120
+    )
+  db_session.add(monitor)
+  db_session.commit()
+  return monitor
 
 @pytest.fixture(scope='module')
 def test_graph_1(test_probe_1):

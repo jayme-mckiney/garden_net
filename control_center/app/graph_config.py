@@ -9,6 +9,7 @@ from flask_restful import (
   )
 from app.models import Graph, GraphLine
 from app.db import db_session
+import sqlalchemy
 import logging
 _logger = logging.getLogger('')
 
@@ -33,6 +34,9 @@ class GraphList(Resource):
     except TypeError as e:
       _logger.error(e)
       error_data = {'message': 'payload does no match db schema'}
+      abort(400, **error_data)
+    except sqlalchemy.exc.IntegrityError as e:
+      error_data = {'message': e.orig.args[1]}
       abort(400, **error_data)
     except Exception as e:
       error_data = {'message': 'Something went wrong'}
@@ -79,6 +83,9 @@ class GraphConfig(Resource):
     except TypeError as e:
       _logger.error(e)
       error_data = {'message': 'payload does no match db schema'}
+      abort(400, **error_data)
+    except sqlalchemy.exc.IntegrityError as e:
+      error_data = {'message': e.orig.args[1]}
       abort(400, **error_data)
     except Exception as e:
       error_data = {'message': 'Something went wrong'}

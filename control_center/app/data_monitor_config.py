@@ -7,23 +7,23 @@ from flask_restful import (
     abort,
     marshal
   )
-from app.models import Zone
+from app.models import SingleDataMonitor
 from app.db import db_session
 import sqlalchemy
 import logging
 _logger = logging.getLogger('')
 
-class ZoneList(Resource):
+class MonitorList(Resource):
   def get(self):
-    results = Zone.query.all()
+    results = SingleDataMonitor.query.all()
     dictionary_list = list(map(lambda r: r.as_dict(), results))
-    return {'zones': dictionary_list}, 200
+    return {'monitors': dictionary_list}, 200
 
   def post(self):
     json = request.get_json(force=True)
     try:
-      new_zone = Zone(name=json.get('name'), description=json.get('description'))
-      db_session.add(new_zone)
+      new_monitor = SingleDataMonitor(**json.get('monitor'))
+      db_session.add(new_monitor)
       db_session.commit()
     except TypeError as e:
       _logger.error(e)
@@ -37,25 +37,26 @@ class ZoneList(Resource):
       abort(500, **error_data)
     return ({}, 200)
 
-class ZoneConfig(Resource):
+class MonitorConfig(Resource):
   def get(self, id):
-    zone = Zone.query.filter(Zone.id == id).first()
-    if zone == None:
-      message = {'message': 'Zone not found'}
+    monitor = SingleDataMonitor.query.filter(SingleDataMonitor.id == id).first()
+    if monitor == None:
+      message = {'message': 'Monitor not found'}
       abort(404, **message)
-    zone_dict = zone.as_dict()
-    return ({'zone': zone_dict}, 200)
+    monitor_dict = monitor.as_dict()
+    return ({'monitor': monitor_dict}, 200)
 
   def put(self, id):
-    zone = Zone.query.filter(Zone.id == id).first()
+    monitor = SingleDataMonitor.query.filter(SingleDataMonitor.id == id).first()
     json = request.get_json(force=True)
-    if zone == None:
-      message = {'message': 'Zone not found'}
+    if monitor == None:
+      message = {'message': 'Monitor not found'}
       abort(404, **message)
+    monitor_dict = monitor.as_dict()
     try:
-      setattr(zone, 'name', json['name'])
-      setattr(zone, 'description', json['description'])
-      db_session.add(zone)
+      for key in monitor_dict:
+        setattr(monitor, key, json.get('monitor').get(key))
+      db_session.add(monitor)
       db_session.commit()
     except TypeError as e:
       error_data = {'message': 'payload does no match db schema'}
@@ -70,12 +71,12 @@ class ZoneConfig(Resource):
     return ({}, 200)
 
   def delete(self, id):
-    zone = Zone.query.filter(Zone.id == id).first()
-    if zone == None:
-      message = {'message': 'Zone not found'}
+    monitor = SingleDataMonitor.query.filter(SingleDataMonitor.id == id).first()
+    if monitor == None:
+      message = {'message': 'Monitor not found'}
       abort(404, **message)
     try:
-      db_session.delete(zone)
+      db_session.delete(monitor)
       db_session.commit()
     except TypeError as e:
       error_data = {'message': 'payload does no match db schema'}

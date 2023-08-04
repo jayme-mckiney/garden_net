@@ -77,3 +77,20 @@ class GraphLine(Base):
       {})
   def as_dict(self):
     return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
+class SingleDataMonitor(Base):
+  __tablename__ = 'singledatamonitors'
+  id = Column(Integer, primary_key=True)
+  name = Column(String(50), unique=True, nullable=False)
+  probedata_id = Column(Integer, ForeignKey('probedatas.id'))
+  tolerable_lower_bound = Column(Float, nullable=False)
+  tolerable_upper_bound = Column(Float, nullable=False)
+  refresh_interval = Column(Integer, nullable=False)
+  def as_dict(self):
+    return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
+class Dashboard(Base):
+  __tablename__ = 'dashboards'
+  id = Column(Integer, primary_key=True)
+  name = Column(String(50), unique=True, nullable=False)
+  description = Column(String(128))
