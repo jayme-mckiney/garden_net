@@ -22,10 +22,12 @@ import Welcome from './views/welcome';
 import MonitorHome from './views/monitor/home'
 import ProbeForm from './views/probe/form'
 import {GraphForm, GraphFormEdit} from './views/graph/form'
+import {ReadoutForm, ReadoutFormEdit} from './views/single_point_monitor/form'
 import ListGraphs from './views/graph/list'
 import MonitorSearchForm from './views/monitor/search'
 import ListProbes from './views/probe/list'
 import {ProbeGraphWrapper, ProbeDataGraphWrapper, GraphGraphWrapper, ZoneGraphWrapper} from './views/monitor/graph'
+import {Readout, ReadoutWrapperParams} from './views/monitor/single_readout'
 
 function App() {
   return (
@@ -102,11 +104,14 @@ function App() {
                 <Route path="/data/probedata/:id" element={<ProbeDataGraphWrapper />}/>
                 <Route path="/data/zone/:id" element={<ZoneGraphWrapper />}/>
                 <Route path="/data/graph/:id" element={<GraphGraphWrapper />}/>
+                <Route path="/data/readout/:id" element={<ReadoutWrapperParams />}/>                
                 <Route path="/probes" element={<ListProbes />}/>
                 <Route path="/probes/create" element={<ProbeForm />}/>
                 <Route path="/graphs/create" element={<GraphForm />}/>
                 <Route path="/graphs/:id" element={<GraphFormEdit edit={true} />}/>
                 <Route path="/graphs" element={<ListGraphs />}/>
+                <Route path="/readout/create" element={<ReadoutForm />}/>
+                <Route path="/readout/:id" element={<ReadoutFormEdit edit={true} />}/>
 
               </Routes>
             </Container>

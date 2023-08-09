@@ -61,6 +61,7 @@ def populate_dev_data(interval_mins=2, hours_to_pop=2):
 
     start_time = datetime.now() - timedelta(hours=hours_to_pop)
     entries_to_generate = int(hours_to_pop * 60 / interval_mins)
+    zone = Zone.query.first()
 
 
     p1 = Probe(

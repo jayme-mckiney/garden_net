@@ -178,19 +178,19 @@ export class GraphForm extends Component {
             <Modal.Title>Select a piece of probe data</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <Form.Group as={Col} controlId="zoneId">
+            <Form.Group as={Col}>
               <Form.Label>Zone Filter</Form.Label>
               <Form.Control as="select">
                 {zoneOptions}
               </Form.Control>
             </Form.Group>
-            <Form.Group as={Col} controlId="probeId">
+            <Form.Group as={Col}>
               <Form.Label>Probe Filter</Form.Label>
               <Form.Control as="select" onChange={this.handleSelectProbe}>
                 {probeOptions}
               </Form.Control>
             </Form.Group>
-            <Form.Group as={Col} controlId="probeDataId">
+            <Form.Group as={Col}>
               <Form.Label>Probe Data Selection</Form.Label>
               <Form.Control as="select" onChange={this.handleSelectProbeData}>
                 {probeDataOptions}
@@ -207,15 +207,15 @@ export class GraphForm extends Component {
           </Modal.Footer>
         </Modal>
         <Form>
-          <Form.Group as={Col} controlId="graphNameId">
+          <Form.Group as={Col}>
             <Form.Label>Graph Name</Form.Label>
             <Form.Control name='name' value={this.state.graph.name} onChange={this.handleNameInput} placeholder="My graph" />
           </Form.Group>
-          <Form.Group controlId="graphDescriptionId">
+          <Form.Group>
             <Form.Label>Description</Form.Label>
             <Form.Control name='description' value={this.state.graph.description} onChange={this.handleDescInput} placeholder="This graph shows whatever" />
           </Form.Group>
-          <Form.Group controlId="graphLines">
+          <Form.Group>
             <Form.Label>Graph Lines</Form.Label>
             {probe_data_form}
             <Button onClick={this.openModal} type='button'>Add Graph Line</Button>

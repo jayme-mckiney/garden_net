@@ -135,27 +135,27 @@ class ProbeForm extends Component {
     return (
       <Form>
         <Row>
-          <Form.Group as={Col} controlId="probeNameId">
+          <Form.Group as={Col}>
             <Form.Label>Probe Name</Form.Label>
             <Form.Control name='name' value={this.state.probe.name} onChange={this.handleInput} placeholder="Environmental Sensor 1" />
           </Form.Group>
-          <Form.Group as={Col} controlId="probeUrlId">
+          <Form.Group as={Col}>
             <Form.Label>Probe URL</Form.Label>
             <Form.Control name='url' value={this.state.probe.url} onChange={this.handleInput} placeholder="ESP_3216581" />
           </Form.Group>
         </Row>
-        <Form.Group controlId="probeDescriptionId">
+        <Form.Group>
           <Form.Label>Description</Form.Label>
           <Form.Control name='description' value={this.state.probe.description} onChange={this.handleInput} placeholder="This environmental sensor is installed near the lights" />
         </Form.Group>
         <Row>
-          <Form.Group as={Col} controlId="zoneId">
+          <Form.Group as={Col}>
             <Form.Label>Probe Zone Location</Form.Label>
             <Form.Control as="select">
               {form_options}
             </Form.Control>
           </Form.Group>
-          <Form.Group as={Col} controlId="activeIid">
+          <Form.Group as={Col}>
             <Form.Check 
               type="switch"
               id="active"
@@ -166,7 +166,7 @@ class ProbeForm extends Component {
             />
           </Form.Group>
         </Row>
-        <Form.Group controlId="probeNameMapping">
+        <Form.Group>
           <Form.Label>Data Name Mapping</Form.Label>
           {probe_data_form}
           <Button onClick={this.addProbeData} type='button'>Add Data Mapping</Button>
