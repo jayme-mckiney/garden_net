@@ -1,5 +1,5 @@
 from app.db import Base
-from sqlalchemy import Column, Integer, String, DateTime, Float, ForeignKey, PrimaryKeyConstraint, Boolean, ARRAY
+from sqlalchemy import Column, Integer, String, DateTime, Float, ForeignKey, PrimaryKeyConstraint, Boolean, ARRAY, JSON
 from sqlalchemy.orm import relationship
 
 
@@ -79,7 +79,7 @@ class GraphLine(Base):
     return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
 class SingleDataMonitor(Base):
-  __tablename__ = 'singledatamonitors'
+  __tablename__ = 'single_data_monitors'
   id = Column(Integer, primary_key=True)
   name = Column(String(50), unique=True, nullable=False)
   probedata_id = Column(Integer, ForeignKey('probedatas.id'))
@@ -94,3 +94,6 @@ class Dashboard(Base):
   id = Column(Integer, primary_key=True)
   name = Column(String(50), unique=True, nullable=False)
   description = Column(String(128))
+  layout = Column(JSON)
+  def as_dict(self):
+    return {c.name: getattr(self, c.name) for c in self.__table__.columns}

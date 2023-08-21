@@ -14,9 +14,11 @@ from app.models import (
   Graph,
   GraphLine,
   DataPoint,
-  SingleDataMonitor
+  SingleDataMonitor,
+  Dashboard
 )
 from datetime import datetime, timedelta
+import json
     
 
 @pytest.fixture(scope='module')
@@ -26,9 +28,14 @@ def client():
   drop_db()
   init_db()
   app = create_app(db_session)
+  print('making client')
   with app.test_client() as client:
     yield client
+  print('dropping db')
   drop_db()
+  print('db dropped')
+  db_session.close()
+  print('context destroyed')
 
 @pytest.fixture(scope='module')
 def test_probe_1():
@@ -97,3 +104,44 @@ def test_graph_1(test_probe_1):
 @pytest.fixture(scope='module')
 def start_time():
   return datetime(year=2023, month=8, day=2)
+
+@pytest.fixture(scope='module')
+def test_dashboard(test_graph_1, test_monitor_1):
+  dash = Dashboard(name='test dashboard', description="does stuff", layout=json.dumps([
+      {
+        'component_id': test_graph_1.id,
+        'component_type': 'Graph',
+        'sizing': {'width': '75%'}
+      },
+      {
+        'component_id': test_monitor_1.id,
+        'component_type': 'Monitor',
+        'sizing': {'width': '25%'}
+      }
+    ]))
+  db_session.add(dash)
+  db_session.commit()
+  return dash
+
+@pytest.fixture(scope='module')
+def datapoints_for_cleaner():
+  probe1 = Probe(name='cleaner test probe1', description='cleaner test', active=True, zone_id=1, url='')
+  db_session.add(probe1)
+  db_session.commit()
+  pd1 = ProbeData(name='cleaner test data1', name_in_probe='thing1', description='', probe_id=probe1.id)
+  pd2 = ProbeData(name='cleeaner test data2', name_in_probe='thing2', description='', probe_id=probe1.id)
+  db_session.add(pd1)
+  db_session.add(pd2)
+  db_session.commit()
+  datapoint_list =[]
+  start_time = datetime(year=2023, month=8, day=2) - timedelta(hours=1)
+  for i in range(60*26):
+    data = 50
+    if i % 10 == 0:
+      data = 10
+    datapoint_list.append(DataPoint(observation_datetime=start_time + timedelta(minutes=i), probedata_id=pd1.id, data=data))
+    datapoint_list.append(DataPoint(observation_datetime=start_time + timedelta(minutes=i), probedata_id=pd2.id, data=data))
+  db_session.add_all(datapoint_list)
+  db_session.commit()
+  return {'probe': probe1, 'start_time': start_time}
+  

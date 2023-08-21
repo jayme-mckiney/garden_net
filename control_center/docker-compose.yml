@@ -2,7 +2,7 @@ version: "3.3"
 services:
     db:
         container_name: mydb
-        image: mysql:5.7
+        image: mysql:8.0
         ports:
             - "32001:3306"
         command: --init-file /data/application/init.sql

@@ -4,6 +4,8 @@ This is a toy project I have been playing with to create a network of sensors ru
 
 This is acheived by each microcontroller hosting a simple http server that responds with the latest data from the sensor or sensors connected. Which are gathered by sentry.py as service based upon configuration set up in the control center. Which will then evaluate the rules and either directly or through a publish subscribe system take any action that is required.
 
+Additionaly data_cleaner.py should be setup as a chron job to be run each night.  This script will reduce the previous days data entries to one entry per 10 minute period per probedata_id keeping the earliest entries for each time frame.  This is to minimize the storage needed for the DB while allowing the newer data to be polled at 1 minute intervals.
+
 If you are interested in the project for whatever reason there is docker-compose.yml under control_center that will stand up the back end as I use it for development from there you can shell into the container and run the `init_db()` and `populate_dev_data()` methods from `app/db.py`. And the UI has been made under node 18 `npm -install` `npm start dev` should get things running from the ui folder.
 
 Also please put away any pitchforks regarding the server being evoked with the call to python because again this container is only for developments purposes.

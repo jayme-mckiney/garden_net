@@ -39,7 +39,7 @@ def test_probe_create_invalid_dupe_name(client, test_probe_1):
     }]
   })
   assert response.status_code == 400
-  assert response.get_json() == {"message": "Duplicate entry '{name}' for key 'name'".format(name=test_probe_1.name)}
+  assert response.get_json() == {"message": "Duplicate entry '{name}' for key 'probes.name'".format(name=test_probe_1.name)}
 
 def test_probe_create_invalid_no_zone(client):
   response = client.post("/probes", json= {

@@ -5,6 +5,7 @@ import json
 from .probe_config import ProbeConfig, ProbeList
 from .data_monitor_config import MonitorConfig, MonitorList
 from .graph_config import GraphConfig, GraphList
+from .dashboard_config import DashboardList, DashboardConfig
 from .probe_data_config import ProbeDataList, ProbeDataHeirarchy
 from .zone_config import ZoneList, ZoneConfig
 from .data_points import DataPointRetrieval
@@ -78,4 +79,6 @@ def create_app(db_session=None, debug=False):
   api.add_resource(GraphConfig, '/graphs/<id>')
   api.add_resource(MonitorList, '/monitors')
   api.add_resource(MonitorConfig, '/monitors/<id>')
+  api.add_resource(DashboardList, '/dashboards')
+  api.add_resource(DashboardConfig, '/dashboards/<id>')
   return app
