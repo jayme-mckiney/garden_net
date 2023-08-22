@@ -1,0 +1,11 @@
+.single-readout-display {
+  margin-top: 10px;
+  padding: 20px;
+  border-color: black;
+  border-width: 5px;
+  display: inline-block;
+}
+.single-readout-display .data {
+  font-size: 30px;
+  text-align: center;
+}

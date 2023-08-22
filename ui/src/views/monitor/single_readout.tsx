@@ -1,6 +1,7 @@
 import React, { Component, createRef } from 'react';
 import {request, get} from '../../helpers'
 import { useParams } from "react-router";
+import './single_readout.css';
 
 export class Readout extends Component {
   constructor(props) {
@@ -53,10 +54,10 @@ export class Readout extends Component {
     const color = `rgb(${redValue} ${greenValue} 0)`
     
     return (
-    <span style={{ marginTop: 20 }}>
+    <div className="single-readout-display">
       {this.state.readout_data.name}
-      <div style={{fontSize: 30, color: color}}>{this.state.data}</div>
-    </span>
+      <div className="data" style={{color: color}}>{this.state.data}</div>
+    </div>
     );
   }
 }

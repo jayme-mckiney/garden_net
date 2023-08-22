@@ -25,7 +25,7 @@ def clean(start_time=datetime.now()-timedelta(days=2), days=1):
 
   CREATE TEMPORARY TABLE rows_to_keep_temp  AS
   WITH sel AS (
-    SELECT * FROM datapoints
+    SELECT * FROM data_points
     WHERE  observation_datetime between '2018-10-30' AND '2018-10-31'
   ),
   filter_times AS (
@@ -39,21 +39,21 @@ def clean(start_time=datetime.now()-timedelta(days=2), days=1):
   ON sel.observation_datetime = filter_times.observation_datetime
   AND sel.probedata_id = filter_times.probedata_id;
 
-  DELETE FROM datapoints
+  DELETE FROM data_points
   WHERE observation_datetime between '2018-10-30' AND '2018-10-31';
 
-  INSERT INTO datapoints (observation_datetime, probedata_id, data)
+  INSERT INTO data_points (observation_datetime, probedata_id, data)
   SELECT observation_datetime, probedata_id, data
   FROM rows_to_keep_temp
 
   The nice things I could have if mariadb's returning functionality was useful
 
   WITH del AS (
-     DELETE FROM "datapoints"
+     DELETE FROM "data_points"
      WHERE  observation_datetime <= '2018-10-31+0'
      RETURNING *
      )
-  INSERT INTO "datapoints"
+  INSERT INTO "data_points"
   SELECT observation_datetime, del_whole.probedata_id, data
     FROM del AS del_whole JOIN(
   SELECT min(observation_datetime) AS timestamp, probedata_id
